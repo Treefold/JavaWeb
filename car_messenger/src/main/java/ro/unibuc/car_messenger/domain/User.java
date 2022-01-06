@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -19,9 +22,14 @@ public class User {
     @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(min = 4, max = 40)
+    @Pattern(regexp = "^(.+)@(.+)\\.(.+)$")
     @Column(name = "email", unique = true, nullable = false)
     private String username;
 
+    @NotBlank
+    @Size(min = 6, max = 20)
     @Column(name = "password", nullable = false)
     private String password;
 
