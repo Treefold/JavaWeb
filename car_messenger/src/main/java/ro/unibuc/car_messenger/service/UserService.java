@@ -8,10 +8,12 @@ import ro.unibuc.car_messenger.domain.Role;
 import ro.unibuc.car_messenger.domain.RoleType;
 import ro.unibuc.car_messenger.domain.User;
 import ro.unibuc.car_messenger.exception.AccessDeniedException;
+import ro.unibuc.car_messenger.exception.InvalidNewUserException;
 import ro.unibuc.car_messenger.exception.UserNotLoggedinException;
 import ro.unibuc.car_messenger.repo.RoleRepo;
 import ro.unibuc.car_messenger.repo.UserRepo;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +23,17 @@ public class UserService {
     private final RoleRepo roleRepo;
 
     public User saveUser(User user) {
-        log.info("Saving new user {} to the database", user.getUsername());
-        return userRepo.save(user);
+        if (userRepo.findByUsername(user.getUsername()).isPresent()) {
+            throw new InvalidNewUserException(); // the user already exists
+        }
+        User newUser;
+        try {
+            newUser = userRepo.save(user);
+            log.info("Saving new user {} to the database", user.getUsername());
+        } catch (ConstraintViolationException e) {
+            throw new InvalidNewUserException(); // email or password validation error
+        }
+        return newUser;
     }
 
     public Optional<User> updateUser(String username, String password) {

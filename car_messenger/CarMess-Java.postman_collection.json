@@ -15,7 +15,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"test1\",\r\n    \"password\": \"Test1.\"\r\n}",
+							"raw": "{\r\n    \"username\": \"test1@mail.com\",\r\n    \"password\": \"Test1.\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -44,7 +44,7 @@
 						"header": [
 							{
 								"key": "login_username",
-								"value": "mihaidaniel",
+								"value": "mihaidaniel@gmail.com",
 								"type": "default"
 							},
 							{
@@ -74,7 +74,7 @@
 						"header": [
 							{
 								"key": "login_username",
-								"value": "test1",
+								"value": "test1@mail.com",
 								"type": "default"
 							},
 							{
@@ -104,7 +104,7 @@
 						"header": [
 							{
 								"key": "login_username",
-								"value": "test1",
+								"value": "test1@mail.com",
 								"type": "default"
 							},
 							{

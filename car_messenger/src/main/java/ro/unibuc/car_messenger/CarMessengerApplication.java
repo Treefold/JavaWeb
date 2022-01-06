@@ -26,8 +26,8 @@ public class CarMessengerApplication {
             for (RoleType roleType : RoleType.values()) {
                 userService.saveRole(new Role(null, roleType));
             }
-            userService.saveUser(new User(null, "mihaidaniel", "Password0.", new ArrayList<>()));
-            userService.addRoleToUser("mihaidaniel", ADMIN);
+            userService.saveUser(new User(null, "mihaidaniel@gmail.com", "Password0.", new ArrayList<>()));
+            userService.addRoleToUser("mihaidaniel@gmail.com", ADMIN);
         };
     }
 }
