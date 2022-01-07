@@ -10,7 +10,6 @@ import ro.unibuc.car_messenger.service.UserService;
 import java.util.List;
 import java.util.Optional;
 
-import static ro.unibuc.car_messenger.domain.RoleType.ADMIN;
 import static ro.unibuc.car_messenger.domain.RoleType.USER;
 
 @RestController
