@@ -2,45 +2,57 @@ package ro.unibuc.car_messenger.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.unibuc.car_messenger.domain.Role;
 import ro.unibuc.car_messenger.domain.RoleType;
 import ro.unibuc.car_messenger.domain.User;
+import ro.unibuc.car_messenger.dto.UserDto;
 import ro.unibuc.car_messenger.exception.AccessDeniedException;
 import ro.unibuc.car_messenger.exception.InvalidNewUserException;
 import ro.unibuc.car_messenger.exception.UserNotLoggedinException;
+import ro.unibuc.car_messenger.mapper.UserMapper;
 import ro.unibuc.car_messenger.repo.RoleRepo;
 import ro.unibuc.car_messenger.repo.UserRepo;
 
 import javax.validation.ConstraintViolationException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
 public class UserService {
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;
+    @Autowired
+    private UserMapper userMapper;
 
-    public User saveUser(User user) {
-        if (userRepo.findByUsername(user.getUsername()).isPresent()) {
+    public UserDto saveUser(UserDto userDto) {
+        if (userRepo.findByUsername(userDto.getUsername()).isPresent()) {
             throw new InvalidNewUserException(); // the user already exists
         }
-        User newUser;
+        UserDto newUser;
+
         try {
-            newUser = userRepo.save(user);
-            log.info("Saving new user {} to the database", user.getUsername());
+            User userDraft = userMapper.mapToEntity(userDto);
+            userDraft.setRoles(new ArrayList<Role>());
+            newUser = userMapper.mapToDto(userRepo.save(userDraft));
+            log.info("Saving new user {} to the database", userDto.getUsername());
         } catch (ConstraintViolationException e) {
             throw new InvalidNewUserException(); // email or password validation error
         }
         return newUser;
     }
 
-    public Optional<User> updateUser(String username, String password) {
+    public Optional<UserDto> updateUser(String username, String password) {
         log.info("Updating user {} in the database", username);
         Optional<User> user = userRepo.findByUsername(username);
-        user.ifPresent(u -> u.setPassword(password));
-        return user;
+        if (user.isEmpty()) { return Optional.empty(); }
+        user.get().setPassword(password);
+        return Optional.of(userMapper.mapToDto(user.get()));
     }
 
     public Role saveRole(Role role) {
@@ -55,35 +67,35 @@ public class UserService {
         user.ifPresent(u -> u.getRoles().add(role));
     }
 
-    public Optional<User> getUser(String username) {
+    public Optional<UserDto> getUser(String username) {
         log.info("Fetching user {}", username);
-        return userRepo.findByUsername(username);
+        return Optional.of(userMapper.mapToDto(userRepo.findByUsername(username).get()));
     }
 
-    public List<User> getUsers() {
+    public List<UserDto> getUsers() {
         log.info("Fetching all users");
-        return userRepo.findAll();
+        return userRepo.findAll().stream().map(u -> userMapper.mapToDto(u)).collect(Collectors.toList());
     }
 
-    public Optional<User> login(String username, String password) {
+    public Optional<UserDto> login(String username, String password) {
         boolean loginSuccess;
         Optional<User> user = userRepo.findByUsername(username);
         if (user.isEmpty()) { loginSuccess = false; }
         else { loginSuccess = user.get().testPassword(password); }
         log.info("{} login for {}", loginSuccess ? "Successful" : "Failed", username);
-        return loginSuccess ? user : Optional.empty();
+        return loginSuccess ? Optional.of(userMapper.mapToDto(user.get())) : Optional.empty();
     }
 
-    public User handleLogin (String username, String password) {
+    public UserDto handleLogin (String username, String password) {
         if (username.equals("") || password.equals("")) { throw new UserNotLoggedinException(); }
-        Optional<User> user = this.login(username, password);
-        if (user.isEmpty()) { throw new UserNotLoggedinException(); }
-        return user.get();
+        Optional<UserDto> userDto = this.login(username, password);
+        if (userDto.isEmpty()) { throw new UserNotLoggedinException(); }
+        return userDto.get();
     }
 
-    public User handleAdminLogin (String username, String password) {
-        User user = this.handleLogin (username, password);
-        if (!user.isAdmin()) { throw new AccessDeniedException(); }
-        return user;
+    public UserDto handleAdminLogin (String username, String password) {
+        UserDto userDto = this.handleLogin (username, password);
+        if (!userRepo.findByUsername(userDto.getUsername()).get().isAdmin()) { throw new AccessDeniedException(); }
+        return userDto;
     }
 }
