@@ -18,7 +18,6 @@ import ro.unibuc.car_messenger.repo.UserRepo;
 
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,7 +37,7 @@ public class UserService {
 
         try {
             User userDraft = userMapper.mapToEntity(userDto);
-            userDraft.setRoles(new ArrayList<Role>());
+            userDraft.setRoles(new ArrayList<>());
             newUser = userMapper.mapToDto(userRepo.save(userDraft));
             log.info("Saving new user {} to the database", userDto.getUsername());
         } catch (ConstraintViolationException e) {
@@ -69,7 +68,8 @@ public class UserService {
 
     public Optional<UserDto> getUser(String username) {
         log.info("Fetching user {}", username);
-        return Optional.of(userMapper.mapToDto(userRepo.findByUsername(username).get()));
+        Optional<User> user = userRepo.findByUsername(username);
+        return user.map(value -> userMapper.mapToDto(value));
     }
 
     public List<UserDto> getUsers() {
@@ -95,7 +95,10 @@ public class UserService {
 
     public UserDto handleAdminLogin (String username, String password) {
         UserDto userDto = this.handleLogin (username, password);
-        if (!userRepo.findByUsername(userDto.getUsername()).get().isAdmin()) { throw new AccessDeniedException(); }
+        userRepo.findByUsername(userDto.getUsername()).ifPresentOrElse(
+                (u) -> { if (!u.isAdmin()) { throw new AccessDeniedException(); } },
+                ()  -> { throw new UserNotLoggedinException(); }
+        );
         return userDto;
     }
 }
