@@ -8,10 +8,12 @@ import ro.unibuc.car_messenger.domain.Role;
 import ro.unibuc.car_messenger.domain.RoleType;
 import ro.unibuc.car_messenger.dto.UserDto;
 import ro.unibuc.car_messenger.service.UserService;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import static ro.unibuc.car_messenger.domain.RoleType.ADMIN;
 
 @SpringBootApplication
+@EnableSwagger2
 public class CarMessengerApplication {
 
     public static void main(String[] args) {
