@@ -182,6 +182,297 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Car CRUD",
+			"item": [
+				{
+					"name": "Create Car (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "login_username",
+								"value": "mihaidaniel@gmail.com",
+								"type": "default"
+							},
+							{
+								"key": "login_password",
+								"value": "Password0.",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"plate\": \"B123ABC\",\r\n    \"countryCode\": \"RO\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/car/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"car",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Car (User)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "login_username",
+								"value": "test1@mail.com",
+								"type": "default"
+							},
+							{
+								"key": "login_password",
+								"value": "Test1.",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"plate\": \"B11BAD\",\r\n    \"countryCode\": \"RO\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/car/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"car",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Cars (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "login_username",
+								"value": "mihaidaniel@gmail.com",
+								"type": "default"
+							},
+							{
+								"key": "login_password",
+								"value": "Password0.",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/car",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"car"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Car (User)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "login_username",
+								"value": "test1@mail.com",
+								"type": "default"
+							},
+							{
+								"key": "login_password",
+								"value": "Test1.",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/car",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"car"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Car (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "login_username",
+								"value": "mihaidaniel@gmail.com",
+								"type": "default"
+							},
+							{
+								"key": "login_password",
+								"value": "Password0.",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"plate\": \"A000MIN\",\r\n    \"countryCode\": \"ADM\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/car/update/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"car",
+								"update",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Car (User)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "login_username",
+								"value": "test1@mail.com",
+								"type": "default"
+							},
+							{
+								"key": "login_password",
+								"value": "Test1.",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"plate\": \"U000SER\",\r\n    \"countryCode\": \"USR\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/car/update/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"car",
+								"update",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Car (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "login_username",
+								"value": "mihaidaniel@gmail.com",
+								"type": "default"
+							},
+							{
+								"key": "login_password",
+								"value": "Password0.",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/car/delete/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"car",
+								"delete",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Car (User)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "login_username",
+								"value": "test1@mail.com",
+								"type": "default"
+							},
+							{
+								"key": "login_password",
+								"value": "Test1.",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/car/delete/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"car",
+								"delete",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
