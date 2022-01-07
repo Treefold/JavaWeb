@@ -34,8 +34,6 @@ public class CarMessengerApplication {
             System.out.println(carService.findCarByPlateAndCountryCode(carDto.getPlate(), carDto.getCountryCode()));
             carService.updateCar(carDto.getId(), new CarDto(null, "NoAdmin", "13"));
             System.out.println(carService.findCarById(carDto.getId()));
-            carService.deleteCar(carDto.getId());
-            System.out.println(carService.findCarById(carDto.getId()));
         };
     }
 }
