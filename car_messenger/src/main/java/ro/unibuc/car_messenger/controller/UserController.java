@@ -4,15 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ro.unibuc.car_messenger.domain.User;
-import ro.unibuc.car_messenger.domain.UserNewPassword;
-import ro.unibuc.car_messenger.exception.AccessDeniedException;
-import ro.unibuc.car_messenger.exception.UserNotLoggedinException;
+import ro.unibuc.car_messenger.dto.UserDto;
 import ro.unibuc.car_messenger.service.UserService;
 
 import java.util.List;
 import java.util.Optional;
 
+import static ro.unibuc.car_messenger.domain.RoleType.ADMIN;
 import static ro.unibuc.car_messenger.domain.RoleType.USER;
 
 @RestController
@@ -23,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping()
-    public ResponseEntity<List<User>> getUsers(
+    public ResponseEntity<List<UserDto>> getUsers(
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
             @RequestHeader(value = "login_password", required = false, defaultValue = "") String password
     ) {
@@ -32,14 +30,14 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<User> saveUser(@RequestBody User userIn) {
-        User user = userService.saveUser(userIn);
+    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userIn) {
+        UserDto user = userService.saveUser(userIn);
         userService.addRoleToUser(user.getUsername(), USER);
         return ResponseEntity.created(null).body(user);
     }
 
     @PutMapping("/updatePassword")
-    public ResponseEntity<Optional<User>> updateUserPassword (
+    public ResponseEntity<Optional<UserDto>> updateUserPassword (
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
             @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
             @RequestBody String newPassword

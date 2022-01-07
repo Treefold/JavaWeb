@@ -6,6 +6,50 @@
 	},
 	"item": [
 		{
+			"name": "Swagger",
+			"item": [
+				{
+					"name": "API Docs JSON",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v2/api-docs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v2",
+								"api-docs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "API Docs UI",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/swagger-ui.html",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"swagger-ui.html"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "User CRUD",
 			"item": [
 				{
