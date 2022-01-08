@@ -8,6 +8,7 @@ import ro.unibuc.car_messenger.domain.OwnershipType;
 import ro.unibuc.car_messenger.dto.CarDto;
 import ro.unibuc.car_messenger.dto.OwnershipDto;
 import ro.unibuc.car_messenger.dto.UserDto;
+import ro.unibuc.car_messenger.models.CarView;
 import ro.unibuc.car_messenger.service.CarService;
 import ro.unibuc.car_messenger.service.OwnershipService;
 import ro.unibuc.car_messenger.service.UserService;
@@ -24,37 +25,29 @@ public class CarController {
     private final CarService carService;
     private final OwnershipService ownershipService;
 
-    @GetMapping()
-    public ResponseEntity<List<CarDto>> getCars(
-            @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
-            @RequestHeader(value = "login_password", required = false, defaultValue = "") String password
-    ) {
-        UserDto userDto = userService.handleLogin(username, password);
-        try {
-            userService.handleAdminLogin(username, password);
-            return ResponseEntity.ok().body(carService.findAllCars());
-        } catch (Exception e) {
-            // filter to show only owned cars
-            return ResponseEntity.ok().body(carService.findAllCars());
-        }
-    }
-
     @GetMapping("/{id}")
-    public ResponseEntity<CarDto> getCar(
+    public ResponseEntity<CarView> getCar(
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
             @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
             @PathVariable Long id
     ) {
         UserDto userDto = userService.handleLogin(username, password);
         Optional<CarDto> carDto = carService.findCarById(id);
+        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        Optional<OwnershipDto> ownershipDto = Optional.empty();
+        boolean isAdmin = false;
         try {
             userService.handleAdminLogin(username, password);
-            if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+            isAdmin = true;
         } catch (Exception e) {
-            if (carDto.isEmpty()) { return ResponseEntity.badRequest().build(); }
-            // perform ownership check
+            ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carDto.get().getId());
         }
-        return ResponseEntity.ok().body(carDto.get());
+        if (!isAdmin && ownershipDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+        CarView carView = new CarView(carDto.get());
+        carView.addUsers(ownershipService.findAllByCarId(carDto.get().getId()), isAdmin || ownershipDto.get().isOwner());
+
+        return ResponseEntity.ok().body(carView);
     }
 
     @PostMapping("/create")
