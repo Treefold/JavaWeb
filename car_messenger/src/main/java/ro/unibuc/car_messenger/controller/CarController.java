@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ro.unibuc.car_messenger.domain.OwnershipType;
 import ro.unibuc.car_messenger.dto.CarDto;
+import ro.unibuc.car_messenger.dto.OwnershipDto;
 import ro.unibuc.car_messenger.dto.UserDto;
 import ro.unibuc.car_messenger.service.CarService;
+import ro.unibuc.car_messenger.service.OwnershipService;
 import ro.unibuc.car_messenger.service.UserService;
 
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.Optional;
 public class CarController {
     private final UserService userService;
     private final CarService carService;
+    private final OwnershipService ownershipService;
 
     @GetMapping()
     public ResponseEntity<List<CarDto>> getCars(
@@ -60,9 +64,9 @@ public class CarController {
             @RequestBody CarDto carDto
     ) {
         UserDto userDto = userService.handleLogin(username, password);
-        CarDto carDtoSaved = carService.saveCar(carDto);
-        // add ownership of the car
-        return ResponseEntity.created(null).body(carDtoSaved);
+        CarDto savedCarDto = carService.saveCar(carDto);
+        ownershipService.saveOwnership(new OwnershipDto(null, userDto, savedCarDto, OwnershipType.OWNER));
+        return ResponseEntity.created(null).body(savedCarDto);
     }
 
     @PutMapping ("/update/{id}")
@@ -79,7 +83,10 @@ public class CarController {
             if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
         } catch (Exception e) {
             if (carDto.isEmpty()) { return ResponseEntity.badRequest().build(); }
-            // perform ownership check
+            Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carDto.get().getId());
+            if (ownershipDto.isEmpty() || !ownershipDto.get().isAtLeastCoowner()) {
+                return ResponseEntity.badRequest().build();
+            }
         }
         return ResponseEntity.ok().body(carService.updateCar(id, carDtoIn).get());
     }

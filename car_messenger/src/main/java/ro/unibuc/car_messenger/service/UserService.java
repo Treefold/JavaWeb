@@ -39,7 +39,7 @@ public class UserService {
             User userDraft = userMapper.mapToEntity(userDto);
             userDraft.setRoles(new ArrayList<>());
             newUser = userMapper.mapToDto(userRepo.save(userDraft));
-            log.info("Saving new user {} to the database", userDto.getUsername());
+            log.info("Saving new user {{}} to the database", userDto.getUsername());
         } catch (ConstraintViolationException e) {
             throw new InvalidNewUserException(); // email or password validation error
         }
@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public Optional<UserDto> updateUser(String username, String password) {
-        log.info("Updating user {} in the database", username);
+        log.info("Updating user with username{{}} in the database", username);
         Optional<User> user = userRepo.findByUsername(username);
         if (user.isEmpty()) { return Optional.empty(); }
         user.get().setPassword(password);
@@ -55,19 +55,25 @@ public class UserService {
     }
 
     public Role saveRole(Role role) {
-        log.info("Saving new role {} to the database", role.getName());
+        log.info("Saving new role with name{{}} to the database", role.getName());
         return roleRepo.save(role);
     }
 
     public void addRoleToUser(String username, RoleType roleType) {
-        log.info("Add role {} to user {}", roleType, username);
+        log.info("Add role {{}} to username {{}}", roleType, username);
         Optional<User> user = userRepo.findByUsername(username);
         Role role = roleRepo.findByName(roleType);
         user.ifPresent(u -> u.getRoles().add(role));
     }
 
+    public Optional<UserDto> getUser(Long id) {
+        log.info("Fetching user id{{}}", id);
+        Optional<User> user = userRepo.findById(id);
+        return user.map(value -> userMapper.mapToDto(value));
+    }
+
     public Optional<UserDto> getUser(String username) {
-        log.info("Fetching user {}", username);
+        log.info("Fetching user name{{}}", username);
         Optional<User> user = userRepo.findByUsername(username);
         return user.map(value -> userMapper.mapToDto(value));
     }
@@ -82,7 +88,7 @@ public class UserService {
         Optional<User> user = userRepo.findByUsername(username);
         if (user.isEmpty()) { loginSuccess = false; }
         else { loginSuccess = user.get().testPassword(password); }
-        log.info("{} login for {}", loginSuccess ? "Successful" : "Failed", username);
+        log.info("{} login for username{{}}", loginSuccess ? "Successful" : "Failed", username);
         return loginSuccess ? Optional.of(userMapper.mapToDto(user.get())) : Optional.empty();
     }
 

@@ -6,5 +6,6 @@ import ro.unibuc.car_messenger.domain.User;
 import java.util.Optional;
 
 public interface UserRepo extends JpaRepository<User, Long> {
+    Optional<User> findById(Long userId);
     Optional<User> findByUsername(String username);
 }

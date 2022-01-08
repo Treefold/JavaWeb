@@ -5,10 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.unibuc.car_messenger.domain.Car;
 import ro.unibuc.car_messenger.domain.Ownership;
 import ro.unibuc.car_messenger.domain.OwnershipType;
-import ro.unibuc.car_messenger.domain.User;
 import ro.unibuc.car_messenger.dto.CarDto;
 import ro.unibuc.car_messenger.dto.OwnershipDto;
 import ro.unibuc.car_messenger.dto.UserDto;
@@ -36,7 +34,7 @@ public class OwnershipService {
         if (ownershipRepo.findFirstByUserAndCar(ownership.getUser(), ownership.getCar()).isPresent()) {
             throw  new UniqueException("The ownership already exists");
         }
-        log.info("Saving new ownership {{}} between userId{{}} and carId{{}} to the database", ownership.getId(), ownership.getUser().getId(), ownership.getCar().getId());
+        log.info("Saving new ownership {{}} between userId{{}} and carId{{}} to the database", ownership.getCategory(), ownership.getUser().getId(), ownership.getCar().getId());
         return ownershipMapper.mapToDto(ownershipRepo.save(ownership));
     }
 
