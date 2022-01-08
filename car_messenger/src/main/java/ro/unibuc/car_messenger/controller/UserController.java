@@ -29,15 +29,15 @@ public class UserController {
     ) {
         UserDto userDto = userService.handleLogin(username, password);
         UserView userView = new UserView(userDto);
-        userView.addCar(ownershipService.findAllByUserId(userDto.getId()));
+        userView.addCars(ownershipService.findAllByUserId(userDto.getId()));
         return ResponseEntity.ok().body(userView);
     }
 
-    @GetMapping("/specific/{id}")
+    @GetMapping("/specific/{userId}")
     public ResponseEntity<UserView> getUserById(
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
             @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
-            @PathVariable Long id
+            @PathVariable Long userId
     ) {
         try {
             userService.handleAdminLogin(username, password);
@@ -46,12 +46,12 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
 
-        Optional<UserDto> userDto = userService.getUser(id);
+        Optional<UserDto> userDto = userService.getUser(userId);
         if (userDto.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         UserView userView = new UserView(userDto.get());
-        userView.addCar(ownershipService.findAllByUserId(id));
+        userView.addCars(ownershipService.findAllByUserId(userId));
 
         return ResponseEntity.ok().body(userView);
     }

@@ -30,16 +30,18 @@ public class UserView {
         this.pendingRequestCarIds = new ArrayList<>();
     }
 
-    public void addCar(Long carId, OwnershipType category) {
+    public UserView addCar(Long carId, OwnershipType category) {
         switch (category) {
             case OWNER -> this.ownedCarIds.add(carId);
             case COOWNER -> this.coownedCarIds.add(carId);
             case INVITED -> this.pendingInvitationCarIds.add(carId);
             case REQUESTED -> this.pendingRequestCarIds.add(carId);
         }
+        return this;
     }
 
-    public void addCar(List<OwnershipDto> ownershipDto) {
+    public UserView addCars(List<OwnershipDto> ownershipDto) {
         ownershipDto.forEach(o -> this.addCar(o.getCarDto().getId(), o.getCategory()));
+        return this;
     }
 }
