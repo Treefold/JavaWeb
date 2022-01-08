@@ -13,7 +13,6 @@ import ro.unibuc.car_messenger.service.CarService;
 import ro.unibuc.car_messenger.service.OwnershipService;
 import ro.unibuc.car_messenger.service.UserService;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -35,17 +34,17 @@ public class CarController {
         Optional<CarDto> carDto = carService.findCarById(id);
         if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
 
-        Optional<OwnershipDto> ownershipDto = Optional.empty();
-        boolean isAdmin = false;
+        boolean isAuthorized = false;
         try {
             userService.handleAdminLogin(username, password);
-            isAdmin = true;
+            isAuthorized = true;
         } catch (Exception e) {
-            ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carDto.get().getId());
+            Optional<OwnershipDto> ownershipDto = ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carDto.get().getId());
+            if (ownershipDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+            isAuthorized = ownershipDto.get().isOwner();
         }
-        if (!isAdmin && ownershipDto.isEmpty()) { return ResponseEntity.notFound().build(); }
         CarView carView = new CarView(carDto.get());
-        carView.addUsers(ownershipService.findAllByCarId(carDto.get().getId()), isAdmin || ownershipDto.get().isOwner());
+        carView.addUsers(ownershipService.findAllByCarId(carDto.get().getId()), isAuthorized);
 
         return ResponseEntity.ok().body(carView);
     }
@@ -71,14 +70,13 @@ public class CarController {
     ) {
         UserDto userDto = userService.handleLogin(username, password);
         Optional<CarDto> carDto = carService.findCarById(id);
+        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
         try {
             userService.handleAdminLogin(username, password);
-            if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
         } catch (Exception e) {
-            if (carDto.isEmpty()) { return ResponseEntity.badRequest().build(); }
             Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carDto.get().getId());
             if (ownershipDto.isEmpty() || !ownershipDto.get().isAtLeastCoowner()) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.notFound().build();
             }
         }
         return ResponseEntity.ok().body(carService.updateCar(id, carDtoIn).get());
@@ -92,12 +90,14 @@ public class CarController {
     ) {
         UserDto userDto = userService.handleLogin(username, password);
         Optional<CarDto> carDto = carService.findCarById(id);
+        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
         try {
             userService.handleAdminLogin(username, password);
-            if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
         } catch (Exception e) {
-            if (carDto.isEmpty()) { return ResponseEntity.badRequest().build(); }
-            // perform ownership check
+            Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carDto.get().getId());
+            if (ownershipDto.isEmpty() || !ownershipDto.get().isOwner()) {
+                return ResponseEntity.notFound().build();
+            }
         }
         carService.deleteCar(id);
         return ResponseEntity.ok().body(carDto.get());
