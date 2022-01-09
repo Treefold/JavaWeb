@@ -15,8 +15,7 @@ import ro.unibuc.car_messenger.repo.UserRepo;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -42,7 +41,7 @@ class UserServiceTest {
                 () -> userService.saveUser(userDtoIn));
 
         // assert
-        assertEquals(null, exception.getMessage());
+        assertNull(exception.getMessage());
     }
 
     @Test
@@ -58,7 +57,7 @@ class UserServiceTest {
                 () -> userService.saveUser(userDtoIn));
 
         // assert
-        assertEquals(null, exception.getMessage());
+        assertNull(exception.getMessage());
     }
 
     @Test
@@ -75,6 +74,36 @@ class UserServiceTest {
 
         // assert
         assertThat(newUserDto).isNotNull();
+    }
 
+    @Test
+    void updateUser_InexistingUserErr() {
+        // arrange
+        UserDto userDto = new UserDto(null, "test0@mail.com", "initial-password");
+        String newPassword = "new-password";
+        when(userRepo.findByUsername(userDto.getUsername())).thenReturn(Optional.empty());
+
+        // act
+        Optional<UserDto> updateUser =  userService.updateUser(userDto.getUsername(), newPassword);
+
+        // assert
+        assertThat(updateUser).isEmpty();
+    }
+
+    @Test
+    void updateUser_NoErrors() {
+        // arrange
+        User initialUser = User.builder().username("test0@mail.com").password("initial-password").build();
+        UserDto userDtoOut = UserDto.builder().username(initialUser.getUsername()).password("new-password").build();
+        User updatedUser = User.builder().username(initialUser.getUsername()).password(userDtoOut.getPassword()).build();
+
+        when(userRepo.findByUsername(initialUser.getUsername())).thenReturn(Optional.of(initialUser));
+        when(userMapper.mapToDto(updatedUser)).thenReturn(userDtoOut);
+
+        // act
+        Optional<UserDto> updateUser =  userService.updateUser(initialUser.getUsername(), userDtoOut.getPassword());
+
+        // assert
+        assertThat(updateUser).isNotNull();
     }
 }

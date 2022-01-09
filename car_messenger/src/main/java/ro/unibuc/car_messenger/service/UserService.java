@@ -48,10 +48,10 @@ public class UserService {
     }
 
     public Optional<UserDto> updateUser(String username, String password) {
-        log.info("Updating user with username{{}} in the database", username);
         Optional<User> user = userRepo.findByUsername(username);
         if (user.isEmpty()) { return Optional.empty(); }
         user.get().setPassword(password);
+        log.info("Updating user with username{{}} in the database", username);
         return Optional.of(userMapper.mapToDto(user.get()));
     }
 
