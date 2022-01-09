@@ -61,10 +61,11 @@ public class UserService {
     }
 
     public void addRoleToUser(String username, RoleType roleType) {
-        log.info("Add role {{}} to username {{}}", roleType, username);
         Optional<User> user = userRepo.findByUsername(username);
+        if (user.isEmpty()) { return; }
         Role role = roleRepo.findByName(roleType);
-        user.ifPresent(u -> u.getRoles().add(role));
+        log.info("Add role {{}} to username {{}}", roleType, username);
+        user.get().getRoles().add(role);
     }
 
     public Optional<UserDto> getUser(Long id) {

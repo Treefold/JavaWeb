@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ro.unibuc.car_messenger.domain.Role;
+import ro.unibuc.car_messenger.domain.RoleType;
 import ro.unibuc.car_messenger.domain.User;
 import ro.unibuc.car_messenger.dto.UserDto;
 import ro.unibuc.car_messenger.exception.InvalidNewUserException;
@@ -12,18 +14,21 @@ import ro.unibuc.car_messenger.mapper.UserMapper;
 import ro.unibuc.car_messenger.repo.RoleRepo;
 import ro.unibuc.car_messenger.repo.UserRepo;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
     @Mock
     private UserRepo userRepo;
+    @Mock
+    private RoleRepo roleRepo;
     @Mock
     private UserMapper userMapper;
     @InjectMocks
@@ -42,6 +47,10 @@ class UserServiceTest {
 
         // assert
         assertNull(exception.getMessage());
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, never()).mapToEntity(any());
+        verify(userRepo, never()).save(any());
+        verify(userMapper, never()).mapToDto(any());
     }
 
     @Test
@@ -58,6 +67,10 @@ class UserServiceTest {
 
         // assert
         assertNull(exception.getMessage());
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, times(1)).mapToEntity(any());
+        verify(userRepo, times(1)).save(any());
+        verify(userMapper, never()).mapToDto(any());
     }
 
     @Test
@@ -74,6 +87,10 @@ class UserServiceTest {
 
         // assert
         assertThat(newUserDto).isNotNull();
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, times(1)).mapToEntity(any());
+        verify(userRepo, times(1)).save(any());
+        verify(userMapper, times(1)).mapToDto(any());
     }
 
     @Test
@@ -88,6 +105,8 @@ class UserServiceTest {
 
         // assert
         assertThat(updateUser).isEmpty();
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
     }
 
     @Test
@@ -105,5 +124,51 @@ class UserServiceTest {
 
         // assert
         assertThat(updateUser).isNotNull();
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, times(1)).mapToDto(any());
+    }
+
+    @Test
+    void saveRole_NoErrors() {
+        // arrange
+        Role roleIn = new Role(null, RoleType.ADMIN);
+        when(roleRepo.save(roleIn)).thenReturn(new Role(1L, RoleType.ADMIN));
+
+        // act
+        Role roleReturn =  userService.saveRole(roleIn);
+
+        // assert
+        assertThat(roleReturn).isNotNull();
+        verify(roleRepo, times(1)).save(any());
+    }
+
+    @Test
+    void addRoleToUser_UserNotFoundErr() {
+        // arrange
+        Role roleIn = new Role(null, RoleType.ADMIN);
+        User user = User.builder().username("test0@mail.com").build();
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        // act
+        userService.addRoleToUser(user.getUsername(), roleIn.getName());
+
+        // assert
+         verify(userRepo, times(1)).findByUsername(any());
+        verify(roleRepo, never()).findByName(any());
+    }
+
+    @Test
+    void addRoleToUser_NoError() {
+        // arrange
+        Role roleIn = new Role(null, RoleType.ADMIN);
+        User user = User.builder().username("test0@mail.com").roles(new ArrayList<>()).build();
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        // act
+        userService.addRoleToUser(user.getUsername(), roleIn.getName());
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(roleRepo, times(1)).findByName(any());
     }
 }
