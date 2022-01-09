@@ -16,7 +16,7 @@ public class CarView {
     private String countryCode;
 
     private Long ownerUserId;
-    private List<Long> coownerCarIds;
+    private List<Long> coownerUserIds;
     private List<Long> pendingInvitationUserIds;
     private List<Long> pendingRequestUserIds;
 
@@ -27,7 +27,7 @@ public class CarView {
         this.plate = carDto.getPlate();
         this.countryCode = carDto.getCountryCode();
         this.ownerUserId = 0L;
-        this.coownerCarIds = new ArrayList<>();
+        this.coownerUserIds = new ArrayList<>();
         this.pendingInvitationUserIds = new ArrayList<>();
         this.pendingRequestUserIds = new ArrayList<>();
     }
@@ -35,7 +35,7 @@ public class CarView {
     public CarView addUser(Long userId, OwnershipType category, boolean isOwner) {
         switch (category) {
             case OWNER -> this.ownerUserId = userId;
-            case COOWNER -> this.coownerCarIds.add(userId);
+            case COOWNER -> this.coownerUserIds.add(userId);
             case INVITED -> { if(isOwner){ this.pendingInvitationUserIds.add(userId); } }
             case REQUESTED -> { if(isOwner){ this.pendingRequestUserIds.add(userId); } }
         }
