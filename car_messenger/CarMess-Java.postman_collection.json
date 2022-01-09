@@ -50,7 +50,7 @@
 			]
 		},
 		{
-			"name": "User CRUD",
+			"name": "User",
 			"item": [
 				{
 					"name": "Create User",
@@ -247,7 +247,7 @@
 			]
 		},
 		{
-			"name": "Car CRUD",
+			"name": "Car",
 			"item": [
 				{
 					"name": "Create Car (Admin)",
@@ -536,6 +536,146 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "Coownership",
+			"item": [
+				{
+					"name": "Request",
+					"item": [
+						{
+							"name": "Create Request (User)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "login_username",
+										"value": "test1@mail.com",
+										"type": "default"
+									},
+									{
+										"key": "login_password",
+										"value": "Test1.",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/car/request/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"car",
+										"request",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Accept Request (Admin)",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "login_username",
+										"value": "mihaidaniel@gmail.com",
+										"type": "default"
+									},
+									{
+										"key": "login_password",
+										"value": "Password0.",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/car/request/1/test1@mail.com",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"car",
+										"request",
+										"1",
+										"test1@mail.com"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Request (User)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "login_username",
+										"value": "test1@mail.com",
+										"type": "default"
+									},
+									{
+										"key": "login_password",
+										"value": "Test1.",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/car/request/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"car",
+										"request",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Request (Admin)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "login_username",
+										"value": "mihaidaniel@gmail.com",
+										"type": "default"
+									},
+									{
+										"key": "login_password",
+										"value": "Password0.",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/car/request/1/test1@mail.com",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"car",
+										"request",
+										"1",
+										"test1@mail.com"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
