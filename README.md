@@ -1,8 +1,5 @@
 # Car Messenger
 
-### Scop
-Scopul acestei aplicații este să faciliteze contactarea din diverse motive a proprietarului unui autovehicul. Principalul scop este comunicarea între șoferii blocați și șoferii care blochează, printr+o metodă atât rapida, cât și anonimă pentru a rezolva problema. Aplicația nu este limitată doar la șoferi, scopul acestei aplicații este să îndemne atât șoferii, cât și pietonii să atenționeze proprietarii autovehiculelor în legătură cu orice problemă existentă.
-
 ### Reguli de business
 <ol>
     <li>Orice persoană cu o adresă de mail validă va putea să își creeze un cont, iar în acest mod devine un utilizator.</li>
