@@ -34,17 +34,17 @@ public class UserService {
         if (userRepo.findByUsername(userDto.getUsername()).isPresent()) {
             throw new InvalidNewUserException(); // the user already exists
         }
-        UserDto newUser;
+        UserDto newUserDto;
 
         try {
             User userDraft = userMapper.mapToEntity(userDto);
             userDraft.setRoles(new ArrayList<>());
-            newUser = userMapper.mapToDto(userRepo.save(userDraft));
+            newUserDto = userMapper.mapToDto(userRepo.save(userDraft));
             log.info("Saving new user {{}} to the database", userDto.getUsername());
         } catch (ConstraintViolationException e) {
             throw new InvalidNewUserException(); // email or password validation error
         }
-        return newUser;
+        return newUserDto;
     }
 
     public Optional<UserDto> updateUser(String username, String password) {
