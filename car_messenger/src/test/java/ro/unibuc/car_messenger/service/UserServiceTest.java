@@ -15,7 +15,10 @@ import ro.unibuc.car_messenger.repo.RoleRepo;
 import ro.unibuc.car_messenger.repo.UserRepo;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -171,4 +174,102 @@ class UserServiceTest {
         verify(userRepo, times(1)).findByUsername(any());
         verify(roleRepo, times(1)).findByName(any());
     }
+
+    @Test
+    void getUserById_UserNotFoundErr() {
+        // arrange
+        User user = User.builder().id(1L).build();
+        when(userRepo.findById(user.getId())).thenReturn(Optional.empty());
+
+        // act
+        Optional<UserDto> userDtoOut = userService.getUser(user.getId());
+
+        // assert
+        verify(userRepo, times(1)).findById(any());
+        verify(userMapper, never()).mapToDto(any());
+        assertThat(userDtoOut).isEmpty();
+    }
+
+    @Test
+    void getUserById_NoError() {
+        // arrange
+        User user = User.builder().id(1L).build();
+        when(userRepo.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userMapper.mapToDto(any())).thenReturn(new UserDto());
+
+        // act
+        Optional<UserDto> userDtoOut = userService.getUser(user.getId());
+
+        // assert
+        verify(userRepo, times(1)).findById(any());
+        verify(userMapper, times(1)).mapToDto(any());
+        assertThat(userDtoOut).isPresent();
+    }
+
+    @Test
+    void getUserByUsername_UserNotFoundErr() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").build();
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        // act
+        Optional<UserDto> userDtoOut = userService.getUser(user.getUsername());
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
+        assertThat(userDtoOut).isEmpty();
+    }
+
+    @Test
+    void getUserByUsername_NoError() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").build();
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userMapper.mapToDto(any())).thenReturn(new UserDto());
+
+        // act
+        Optional<UserDto> userDtoOut = userService.getUser(user.getUsername());
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, times(1)).mapToDto(any());
+        assertThat(userDtoOut).isPresent();
+    }
+
+    @Test
+    void getUsers_NoUsers() {
+        // arrange
+        List<User> users = new ArrayList<>();
+        when(userRepo.findAll()).thenReturn(users);
+//        when(userMapper.mapToDto(any())).thenReturn(new UserDto());
+
+        // act
+        List<UserDto> userDtosOut = userService.getUsers();
+
+        // assert
+        verify(userRepo, times(1)).findAll();
+        verify(userMapper, never()).mapToDto(any());
+        assertThat(userDtosOut).isEmpty();
+    }
+
+    @Test
+    void getUsers_SomeUsers() {
+        // arrange
+        int nUsers = 10;
+        List<User> users = new ArrayList<>();
+        for (var i = 0; i < nUsers; ++i) { users.add(new User()); }
+
+        when(userRepo.findAll()).thenReturn(users);
+        when(userMapper.mapToDto(any())).thenReturn(new UserDto());
+
+        // act
+        List<UserDto> userDtosOut = userService.getUsers();
+
+        // assert
+        verify(userRepo, times(1)).findAll();
+        verify(userMapper, times(nUsers)).mapToDto(any());
+        assertEquals(nUsers, userDtosOut.size());
+    }
+
 }

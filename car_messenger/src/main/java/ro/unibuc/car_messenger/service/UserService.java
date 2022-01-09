@@ -71,13 +71,13 @@ public class UserService {
     public Optional<UserDto> getUser(Long id) {
         log.info("Fetching user id{{}}", id);
         Optional<User> user = userRepo.findById(id);
-        return user.map(value -> userMapper.mapToDto(value));
+        return user.map(u -> userMapper.mapToDto(u));
     }
 
     public Optional<UserDto> getUser(String username) {
         log.info("Fetching user name{{}}", username);
         Optional<User> user = userRepo.findByUsername(username);
-        return user.map(value -> userMapper.mapToDto(value));
+        return user.map(u -> userMapper.mapToDto(u));
     }
 
     public List<UserDto> getUsers() {
