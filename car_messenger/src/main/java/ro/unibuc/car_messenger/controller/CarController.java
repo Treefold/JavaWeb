@@ -96,11 +96,12 @@ public class CarController {
             userService.handleAdminLogin(username, password);
         } catch (Exception e) {
             Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
-            if (ownershipDto.isEmpty() || !ownershipDto.get().isOwner()) {
+            if (ownershipDto.isEmpty() || !ownershipDto.get().isAtLeastCoowner()) {
                 return ResponseEntity.notFound().build();
             }
+            if (ownershipDto.get().isOwner()) { carService.deleteCar(carId); }
+            else { ownershipService.deleteOwnership(ownershipDto.get().getId()); }
         }
-        carService.deleteCar(carId);
         return ResponseEntity.ok().body(carDto.get());
     }
 
