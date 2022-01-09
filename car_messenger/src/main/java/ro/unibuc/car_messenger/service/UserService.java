@@ -1,6 +1,7 @@
 package ro.unibuc.car_messenger.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.unibuc.car_messenger.domain.Role;
@@ -22,15 +23,12 @@ import java.util.stream.Collectors;
 
 @Service @Transactional @Slf4j
 public class UserService {
-    private final UserRepo userRepo;
-    private final RoleRepo roleRepo;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private RoleRepo roleRepo;
+    @Autowired
     private UserMapper userMapper;
-
-    public UserService(UserRepo userRepo, RoleRepo roleRepo, UserMapper userMapper) {
-        this.userRepo = userRepo;
-        this.roleRepo = roleRepo;
-        this.userMapper = userMapper;
-    }
 
     public UserDto saveUser(UserDto userDto) {
         if (userRepo.findByUsername(userDto.getUsername()).isPresent()) {
