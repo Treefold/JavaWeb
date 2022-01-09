@@ -9,7 +9,9 @@ import ro.unibuc.car_messenger.domain.Role;
 import ro.unibuc.car_messenger.domain.RoleType;
 import ro.unibuc.car_messenger.domain.User;
 import ro.unibuc.car_messenger.dto.UserDto;
+import ro.unibuc.car_messenger.exception.AccessDeniedException;
 import ro.unibuc.car_messenger.exception.InvalidNewUserException;
+import ro.unibuc.car_messenger.exception.UserNotLoggedinException;
 import ro.unibuc.car_messenger.mapper.UserMapper;
 import ro.unibuc.car_messenger.repo.RoleRepo;
 import ro.unibuc.car_messenger.repo.UserRepo;
@@ -17,8 +19,6 @@ import ro.unibuc.car_messenger.repo.UserRepo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -272,4 +272,189 @@ class UserServiceTest {
         assertEquals(nUsers, userDtosOut.size());
     }
 
+    @Test
+    void login_UserNotFoundErr() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").password("password").build();
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        // act
+        Optional<UserDto> userDtoOut = userService.login(user.getUsername(), user.getPassword());
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
+        assertThat(userDtoOut).isEmpty();
+    }
+
+    @Test
+    void login_InvalidPasswordErr() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").password("password").build();
+        String incorrectPassword = "incorect-password";
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        // act
+        Optional<UserDto> userDtoOut = userService.login(user.getUsername(), incorrectPassword);
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
+        assertThat(userDtoOut).isEmpty();
+    }
+
+    @Test
+    void login_NoError() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").password("password").build();
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userMapper.mapToDto(any())).thenReturn(new UserDto());
+
+        // act
+        Optional<UserDto> userDtoOut = userService.login(user.getUsername(), user.getPassword());
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, times(1)).mapToDto(any());
+        assertThat(userDtoOut).isPresent();
+    }
+
+    @Test
+    void handleLogin_IncorrectUserErr() {
+        // arrange
+        User user = User.builder().username("").password("").build();
+
+        // act
+        assertThrows(UserNotLoggedinException.class,
+                () -> userService.handleLogin(user.getUsername(), user.getPassword()));
+
+        // assert
+        verify(userRepo, never()).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
+    }
+
+    @Test
+    void handleLogin_UserNotFoundErr() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").password("password").build();
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        // act
+        assertThrows(UserNotLoggedinException.class,
+                () -> userService.handleLogin(user.getUsername(), user.getPassword()));
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
+    }
+
+    @Test
+    void handleLogin_InvalidPasswordErr() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").password("password").build();
+        String incorrectPassword = "incorect-password";
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        // act
+        assertThrows(UserNotLoggedinException.class,
+                () -> userService.handleLogin(user.getUsername(), incorrectPassword));
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
+    }
+
+    @Test
+    void handleLogin_NoError() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").password("password").build();
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userMapper.mapToDto(any())).thenReturn(new UserDto());
+
+        // act
+        assertDoesNotThrow(() -> userService.handleLogin(user.getUsername(), user.getPassword()));
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, times(1)).mapToDto(any());
+    }
+
+    @Test
+    void handleAdminLogin_IncorrectUserErr() {
+        // arrange
+        User user = User.builder().username("").password("").build();
+
+        // act
+        assertThrows(UserNotLoggedinException.class,
+                () -> userService.handleAdminLogin(user.getUsername(), user.getPassword()));
+
+        // assert
+        verify(userRepo, never()).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
+    }
+
+    @Test
+    void handleAdminLogin_UserNotFoundErr() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").password("password").build();
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        // act
+        assertThrows(UserNotLoggedinException.class,
+                () -> userService.handleAdminLogin(user.getUsername(), user.getPassword()));
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
+    }
+
+    @Test
+    void handleAdminLogin_InvalidPasswordErr() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").password("password").build();
+        String incorrectPassword = "incorect-password";
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+
+        // act
+        assertThrows(UserNotLoggedinException.class,
+                () -> userService.handleAdminLogin(user.getUsername(), incorrectPassword));
+
+        // assert
+        verify(userRepo, times(1)).findByUsername(any());
+        verify(userMapper, never()).mapToDto(any());
+    }
+
+    @Test
+    void handleAdminLogin_NormalUserErr() {
+        // arrange
+
+        User user = User.builder().username("test0@mail.com").password("password").roles(new ArrayList<>()).build();
+        user.getRoles().add(new Role(null, RoleType.USER));
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userMapper.mapToDto(any())).thenReturn(UserDto.builder().username(user.getUsername()).build());
+
+        // act
+        assertThrows(AccessDeniedException.class,
+                () -> userService.handleAdminLogin(user.getUsername(), user.getPassword()));
+
+        // assert
+        verify(userRepo, times(2)).findByUsername(any());
+        verify(userMapper, times(1)).mapToDto(any());
+    }
+
+    @Test
+    void handleAdminLogin_NoError() {
+        // arrange
+        User user = User.builder().username("test0@mail.com").password("password").roles(new ArrayList<>()).build();
+        user.getRoles().add(new Role(null, RoleType.ADMIN));
+        when(userRepo.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(userMapper.mapToDto(any())).thenReturn(UserDto.builder().username(user.getUsername()).build());
+
+        // act
+        assertDoesNotThrow(() -> userService.handleAdminLogin(user.getUsername(), user.getPassword()));
+
+        // assert
+        verify(userRepo, times(2)).findByUsername(any());
+        verify(userMapper, times(1)).mapToDto(any());
+    }
 }

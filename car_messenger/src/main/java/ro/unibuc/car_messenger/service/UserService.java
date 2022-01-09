@@ -95,7 +95,7 @@ public class UserService {
     }
 
     public UserDto handleLogin (String username, String password) {
-        if (username.equals("") || password.equals("")) { throw new UserNotLoggedinException(); }
+        if ("".equals(username) || "".equals(password)) { throw new UserNotLoggedinException(); }
         Optional<UserDto> userDto = this.login(username, password);
         if (userDto.isEmpty()) { throw new UserNotLoggedinException(); }
         return userDto.get();
@@ -103,9 +103,8 @@ public class UserService {
 
     public UserDto handleAdminLogin (String username, String password) {
         UserDto userDto = this.handleLogin (username, password);
-        userRepo.findByUsername(userDto.getUsername()).ifPresentOrElse(
-                (u) -> { if (!u.isAdmin()) { throw new AccessDeniedException(); } },
-                ()  -> { throw new UserNotLoggedinException(); }
+        userRepo.findByUsername(userDto.getUsername()).ifPresent(
+                (u) -> { if (!u.isAdmin()) { throw new AccessDeniedException(); } }
         );
         return userDto;
     }
