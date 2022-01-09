@@ -1,8 +1,6 @@
 package ro.unibuc.car_messenger.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.unibuc.car_messenger.domain.Car;
@@ -15,11 +13,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service @RequiredArgsConstructor @Transactional @Slf4j
+@Service @Transactional @Slf4j
 public class CarService {
     private final CarRepo carRepo;
-    @Autowired
     private CarMapper carMapper;
+
+    public CarService(CarRepo carRepo, CarMapper carMapper) {
+        this.carRepo = carRepo;
+        this.carMapper = carMapper;
+    }
 
     public CarDto saveCar (CarDto carDto) {
         if (carRepo.findByPlateAndCountryCode(carDto.getPlate(), carDto.getCountryCode()).isPresent()) {

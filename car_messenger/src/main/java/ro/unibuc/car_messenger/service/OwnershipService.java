@@ -1,8 +1,6 @@
 package ro.unibuc.car_messenger.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.unibuc.car_messenger.domain.Ownership;
@@ -19,15 +17,19 @@ import ro.unibuc.car_messenger.repo.OwnershipRepo;
 import java.util.List;
 import java.util.Optional;
 
-@Service @RequiredArgsConstructor @Transactional @Slf4j
+@Service @Transactional @Slf4j
 public class OwnershipService {
     private final OwnershipRepo ownershipRepo;
-    @Autowired
     private final OwnershipMapper ownershipMapper;
-    @Autowired
     private final UserMapper userMapper;
-    @Autowired
     private final CarMapper carMapper;
+
+    public OwnershipService(OwnershipRepo ownershipRepo, OwnershipMapper ownershipMapper, UserMapper userMapper, CarMapper carMapper) {
+        this.ownershipRepo = ownershipRepo;
+        this.ownershipMapper = ownershipMapper;
+        this.userMapper = userMapper;
+        this.carMapper = carMapper;
+    }
 
     public OwnershipDto saveOwnership (OwnershipDto ownershipDto) {
         Ownership ownership = ownershipMapper.mapToEntity(ownershipDto);
