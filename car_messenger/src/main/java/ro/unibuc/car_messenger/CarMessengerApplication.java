@@ -23,6 +23,7 @@ public class CarMessengerApplication {
     @Bean
     CommandLineRunner run(UserService userService, CarService carService, OwnershipService ownershipService) {
         return args -> {
+            /*
             for (RoleType roleType : RoleType.values()) {
                 userService.saveRole(new Role(null, roleType));
             }
@@ -31,6 +32,7 @@ public class CarMessengerApplication {
             userService.addRoleToUser("mihaidaniel@gmail.com", RoleType.ADMIN);
             CarDto adminCarDto = carService.saveCar(new CarDto(null, "Admin", "007"));
             OwnershipDto adminOwnershipDto = ownershipService.saveOwnership(new OwnershipDto(null, adminUserDto, adminCarDto, OwnershipType.OWNER));
+            //*/
         };
     }
 }

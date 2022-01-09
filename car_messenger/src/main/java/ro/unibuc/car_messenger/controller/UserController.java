@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userIn) {
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userIn) {
         UserDto user = userService.saveUser(userIn);
         userService.addRoleToUser(user.getUsername(), USER);
         return ResponseEntity.created(null).body(user);
