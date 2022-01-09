@@ -1,6 +1,5 @@
 package ro.unibuc.car_messenger.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,10 +21,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service @RequiredArgsConstructor @Transactional @Slf4j
+@Service @Transactional @Slf4j
 public class UserService {
-    private final UserRepo userRepo;
-    private final RoleRepo roleRepo;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private RoleRepo roleRepo;
     @Autowired
     private UserMapper userMapper;
 
@@ -33,24 +34,24 @@ public class UserService {
         if (userRepo.findByUsername(userDto.getUsername()).isPresent()) {
             throw new InvalidNewUserException(); // the user already exists
         }
-        UserDto newUser;
+        UserDto newUserDto;
 
         try {
             User userDraft = userMapper.mapToEntity(userDto);
             userDraft.setRoles(new ArrayList<>());
-            newUser = userMapper.mapToDto(userRepo.save(userDraft));
+            newUserDto = userMapper.mapToDto(userRepo.save(userDraft));
             log.info("Saving new user {{}} to the database", userDto.getUsername());
         } catch (ConstraintViolationException e) {
             throw new InvalidNewUserException(); // email or password validation error
         }
-        return newUser;
+        return newUserDto;
     }
 
     public Optional<UserDto> updateUser(String username, String password) {
-        log.info("Updating user with username{{}} in the database", username);
         Optional<User> user = userRepo.findByUsername(username);
         if (user.isEmpty()) { return Optional.empty(); }
         user.get().setPassword(password);
+        log.info("Updating user with username{{}} in the database", username);
         return Optional.of(userMapper.mapToDto(user.get()));
     }
 
@@ -60,22 +61,23 @@ public class UserService {
     }
 
     public void addRoleToUser(String username, RoleType roleType) {
-        log.info("Add role {{}} to username {{}}", roleType, username);
         Optional<User> user = userRepo.findByUsername(username);
+        if (user.isEmpty()) { return; }
         Role role = roleRepo.findByName(roleType);
-        user.ifPresent(u -> u.getRoles().add(role));
+        log.info("Add role {{}} to username {{}}", roleType, username);
+        user.get().getRoles().add(role);
     }
 
     public Optional<UserDto> getUser(Long id) {
         log.info("Fetching user id{{}}", id);
         Optional<User> user = userRepo.findById(id);
-        return user.map(value -> userMapper.mapToDto(value));
+        return user.map(u -> userMapper.mapToDto(u));
     }
 
     public Optional<UserDto> getUser(String username) {
         log.info("Fetching user name{{}}", username);
         Optional<User> user = userRepo.findByUsername(username);
-        return user.map(value -> userMapper.mapToDto(value));
+        return user.map(u -> userMapper.mapToDto(u));
     }
 
     public List<UserDto> getUsers() {
@@ -93,7 +95,7 @@ public class UserService {
     }
 
     public UserDto handleLogin (String username, String password) {
-        if (username.equals("") || password.equals("")) { throw new UserNotLoggedinException(); }
+        if ("".equals(username) || "".equals(password)) { throw new UserNotLoggedinException(); }
         Optional<UserDto> userDto = this.login(username, password);
         if (userDto.isEmpty()) { throw new UserNotLoggedinException(); }
         return userDto.get();
@@ -101,9 +103,8 @@ public class UserService {
 
     public UserDto handleAdminLogin (String username, String password) {
         UserDto userDto = this.handleLogin (username, password);
-        userRepo.findByUsername(userDto.getUsername()).ifPresentOrElse(
-                (u) -> { if (!u.isAdmin()) { throw new AccessDeniedException(); } },
-                ()  -> { throw new UserNotLoggedinException(); }
+        userRepo.findByUsername(userDto.getUsername()).ifPresent(
+                (u) -> { if (!u.isAdmin()) { throw new AccessDeniedException(); } }
         );
         return userDto;
     }
