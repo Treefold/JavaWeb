@@ -676,6 +676,174 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Invite",
+					"item": [
+						{
+							"name": "Create Invite (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "login_username",
+										"value": "mihaidaniel@gmail.com",
+										"type": "default"
+									},
+									{
+										"key": "login_password",
+										"value": "Password0.",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/car/invite/1/test1@mail.com",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"car",
+										"invite",
+										"1",
+										"test1@mail.com"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Accept Invite(User)",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "login_username",
+										"value": "test1@mail.com",
+										"type": "default"
+									},
+									{
+										"key": "login_password",
+										"value": "Test1.",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/car/invite/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"car",
+										"invite",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Invite (User)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "login_username",
+										"value": "test1@mail.com",
+										"type": "default"
+									},
+									{
+										"key": "login_password",
+										"value": "Test1.",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/car/invite/1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"car",
+										"invite",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Invite (Admin)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "login_username",
+										"value": "mihaidaniel@gmail.com",
+										"type": "default"
+									},
+									{
+										"key": "login_password",
+										"value": "Password0.",
+										"type": "default"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/car/invite/1/test1@mail.com",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"car",
+										"invite",
+										"1",
+										"test1@mail.com"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Remove Ownership",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "login_username",
+								"value": "mihaidaniel@gmail.com",
+								"type": "default"
+							},
+							{
+								"key": "login_password",
+								"value": "Password0.",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/car/remove/1/test1@mail.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"car",
+								"remove",
+								"1",
+								"test1@mail.com"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

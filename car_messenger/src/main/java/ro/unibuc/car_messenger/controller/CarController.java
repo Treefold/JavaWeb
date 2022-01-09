@@ -35,12 +35,12 @@ public class CarController {
         Optional<CarDto> carDto = carService.findCarById(carId);
         if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
 
-        boolean isAuthorized = false;
+        boolean isAuthorized;
         try {
             userService.handleAdminLogin(username, password);
             isAuthorized = true;
         } catch (Exception e) {
-            Optional<OwnershipDto> ownershipDto = ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
+            Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
             if (ownershipDto.isEmpty()) { return ResponseEntity.notFound().build(); }
             isAuthorized = ownershipDto.get().isOwner();
         }
@@ -121,7 +121,6 @@ public class CarController {
         return ResponseEntity.created(null).build();
     }
 
-
     @PutMapping("/request/{carId}/{requesterUserUsername}")
     public ResponseEntity<Void> acceptRequestCoownership(
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
@@ -197,6 +196,147 @@ public class CarController {
         }
 
         ownershipService.deleteOwnership(requesterOwnershipDto.get().getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/invite/{carId}/{invitedUserUsername}")
+    public ResponseEntity<Void> inviteCoowner(
+            @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
+            @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
+            @PathVariable Long carId,
+            @PathVariable String invitedUserUsername
+    ) {
+        UserDto userDto = userService.handleLogin(username, password);
+        Optional<CarDto> carDto = carService.findCarById(carId);
+        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+        Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
+        if (ownershipDto.isEmpty() || !ownershipDto.get().isOwner()) {
+            return ResponseEntity.notFound().build();
+        }
+        Optional<UserDto> invitedUserDto = userService.getUser(invitedUserUsername);
+        if (invitedUserDto.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        if (ownershipService.findFirstByUserIdAndCarId(invitedUserDto.get().getId(), carId).isPresent()) {
+            throw new UniqueException("There already exists a relationship between the invited user and the car");
+        }
+
+        ownershipService.saveOwnership(new OwnershipDto(null, invitedUserDto.get(), carDto.get(), OwnershipType.INVITED));
+        return ResponseEntity.created(null).build();
+    }
+
+    @PutMapping("/invite/{carId}")
+    public ResponseEntity<Void> acceptInviteCoownership(
+            @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
+            @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
+            @PathVariable Long carId
+    ) {
+        UserDto invitedUserDto = userService.handleLogin(username, password);
+        Optional<CarDto> carDto = carService.findCarById(carId);
+        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        Optional<OwnershipDto> invitedOwnershipDto = ownershipService.findFirstByUserIdAndCarId(invitedUserDto.getId(), carId);
+        if (invitedOwnershipDto.isEmpty() || !invitedOwnershipDto.get().isInvited()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ownershipService.updateOwnership(invitedOwnershipDto.get().getId(), OwnershipType.COOWNER);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/invite/{carId}/{invitedUserUsername}")
+    public ResponseEntity<Void> acceptInviteCoownershipByAdmin(
+            @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
+            @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
+            @PathVariable Long carId,
+            @PathVariable String invitedUserUsername
+    ) {
+        userService.handleAdminLogin(username, password);
+        Optional<CarDto> carDto = carService.findCarById(carId);
+        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+        Optional<UserDto> invitedUserDto = userService.getUser(invitedUserUsername);
+        if (invitedUserDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+        Optional<OwnershipDto> invitedOwnershipDto = ownershipService.findFirstByUserIdAndCarId(invitedUserDto.get().getId(), carId);
+        if (invitedOwnershipDto.isEmpty() || !invitedOwnershipDto.get().isInvited()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ownershipService.updateOwnership(invitedOwnershipDto.get().getId(), OwnershipType.COOWNER);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/invite/{carId}")
+    public ResponseEntity<Void> declineInviteCoownership(
+            @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
+            @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
+            @PathVariable Long carId
+    ) {
+        UserDto invitedUserDto = userService.handleLogin(username, password);
+        Optional<CarDto> carDto = carService.findCarById(carId);
+        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+        Optional<OwnershipDto> inviteOwnershipDto = ownershipService.findFirstByUserIdAndCarId(invitedUserDto.getId(), carId);
+        if (inviteOwnershipDto.isEmpty() || !inviteOwnershipDto.get().isInvited()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ownershipService.deleteOwnership(inviteOwnershipDto.get().getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/invite/{carId}/{requesterUserUsername}")
+    public ResponseEntity<Void> deleteInviteCoownership(
+            @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
+            @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
+            @PathVariable Long carId,
+            @PathVariable String requesterUserUsername
+    ) {
+        UserDto userDto = userService.handleLogin(username, password);
+        Optional<CarDto> carDto = carService.findCarById(carId);
+        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        try {
+            userService.handleAdminLogin(username, password);
+        } catch (Exception e) {
+            Optional<OwnershipDto> ownerOwnershipDto  = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
+            if (ownerOwnershipDto.isEmpty() || !ownerOwnershipDto.get().isOwner()) { return ResponseEntity.notFound().build(); }
+        }
+
+        Optional<UserDto> invitedUserDto = userService.getUser(requesterUserUsername);
+        if (invitedUserDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+        Optional<OwnershipDto> inviteOwnershipDto = ownershipService.findFirstByUserIdAndCarId(invitedUserDto.get().getId(), carId);
+        if (inviteOwnershipDto.isEmpty() || !inviteOwnershipDto.get().isInvited()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ownershipService.deleteOwnership(inviteOwnershipDto.get().getId());
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/remove/{carId}/{removedUserUsername}")
+    public ResponseEntity<Void> removeOwnership(
+            @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
+            @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
+            @PathVariable Long carId,
+            @PathVariable String removedUserUsername
+    ) {
+        UserDto userDto = userService.handleLogin(username, password);
+        Optional<CarDto> carDto = carService.findCarById(carId);
+        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+
+        try {
+            userService.handleAdminLogin(username, password);
+        } catch (Exception e) {
+            Optional<OwnershipDto> ownerOwnershipDto  = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
+            if (ownerOwnershipDto.isEmpty() || !ownerOwnershipDto.get().isOwner()) { return ResponseEntity.notFound().build(); }
+        }
+
+        Optional<UserDto> removedUserDto = userService.getUser(removedUserUsername);
+        if (removedUserDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+        Optional<OwnershipDto> removedOwnershipDto = ownershipService.findFirstByUserIdAndCarId(removedUserDto.get().getId(), carId);
+        if (removedOwnershipDto.isEmpty()) { return ResponseEntity.notFound().build(); }
+        if (removedOwnershipDto.get().isOwner()) { return ResponseEntity.badRequest().build(); }
+
+        ownershipService.deleteOwnership(removedOwnershipDto.get().getId());
         return ResponseEntity.ok().build();
     }
 
