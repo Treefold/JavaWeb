@@ -11,10 +11,8 @@ import ro.unibuc.car_messenger.dto.UserDto;
 import ro.unibuc.car_messenger.service.CarService;
 import ro.unibuc.car_messenger.service.OwnershipService;
 import ro.unibuc.car_messenger.service.UserService;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
-@EnableSwagger2
 
 public class CarMessengerApplication {
 
