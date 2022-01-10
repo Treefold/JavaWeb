@@ -1,5 +1,6 @@
 package ro.unibuc.car_messenger.controller;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +18,8 @@ import static ro.unibuc.car_messenger.domain.RoleType.USER;
 @RestController
 @RequestMapping("/user")
 @Validated
+@Api(value = "/user",
+        tags = "Users")
 public class UserController {
     @Autowired
     private UserService userService;
