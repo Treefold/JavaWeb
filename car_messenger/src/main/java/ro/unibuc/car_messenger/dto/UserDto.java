@@ -1,5 +1,6 @@
 package ro.unibuc.car_messenger.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,9 +18,11 @@ public class UserDto {
     @NotBlank
     @Size(min = 4, max = 40)
     @Pattern(regexp = "^(.+)@(.+)\\.(.+)$")
+    @ApiModelProperty(value = "username", required = true, notes = "The username of the User", example = "example@mail.com", position = 1)
     private String username;
 
     @NotBlank
     @Size(min = 6, max = 20)
+    @ApiModelProperty(value = "password", required = true, notes = "The password of the User", example = "Password0.", position = 2)
     private String password;
 }

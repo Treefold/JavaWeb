@@ -1,5 +1,6 @@
 package ro.unibuc.car_messenger.models;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import ro.unibuc.car_messenger.domain.OwnershipType;
 import ro.unibuc.car_messenger.dto.CarDto;
@@ -12,12 +13,18 @@ import java.util.List;
 public class CarView {
 
     private Long id;
+    @ApiModelProperty(value = "plate", required = true, notes = "The plate of the Car", example = "B123ABC", position = 1)
     private String plate;
+    @ApiModelProperty(value = "countryCode", required = true, notes = "The country code of the Car", example = "RO", position = 2)
     private String countryCode;
 
+    @ApiModelProperty(value = "ownerUserId", required = true, notes = "The owner Id of the Car", position = 3)
     private Long ownerUserId;
+    @ApiModelProperty(value = "coownerUserIds", notes = "The coowners (by id) of the Car", position = 4)
     private List<Long> coownerUserIds;
+    @ApiModelProperty(value = "pendingInvitationUserIds", notes = "The invited users (by id) to the Car", position = 5)
     private List<Long> pendingInvitationUserIds;
+    @ApiModelProperty(value = "pendingRequestUserIds", notes = "The requested users (by id) of the Car", position = 6)
     private List<Long> pendingRequestUserIds;
 
 
