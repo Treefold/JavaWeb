@@ -1,6 +1,6 @@
 package ro.unibuc.car_messenger.controller;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +16,12 @@ import static ro.unibuc.car_messenger.domain.RoleType.USER;
 
 @RestController
 @RequestMapping("/user")
-@RequiredArgsConstructor
 @Validated
 public class UserController {
-    private final UserService userService;
-    private final OwnershipService ownershipService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private OwnershipService ownershipService;
 
     @GetMapping()
     public ResponseEntity<UserView> getMyUser(
@@ -71,7 +72,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<UserDto> saveUser(@RequestBody UserDto userIn) {
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userIn) {
         UserDto user = userService.saveUser(userIn);
         userService.addRoleToUser(user.getUsername(), USER);
         return ResponseEntity.created(null).body(user);

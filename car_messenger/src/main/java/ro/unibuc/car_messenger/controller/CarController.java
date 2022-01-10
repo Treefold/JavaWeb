@@ -1,6 +1,6 @@
 package ro.unibuc.car_messenger.controller;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +18,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/car")
-@RequiredArgsConstructor
 @Validated
 public class CarController {
-    private final UserService userService;
-    private final CarService carService;
-    private final OwnershipService ownershipService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CarService carService;
+    @Autowired
+    private OwnershipService ownershipService;
 
     @GetMapping("/{carId}")
     public ResponseEntity<CarView> getCar(
