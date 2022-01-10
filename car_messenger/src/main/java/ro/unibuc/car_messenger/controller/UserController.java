@@ -1,6 +1,6 @@
 package ro.unibuc.car_messenger.controller;
 
-import io.swagger.annotations.Api;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +27,12 @@ public class UserController {
     private OwnershipService ownershipService;
 
     @GetMapping()
+    @ApiOperation(value = "GetMyUser",
+            notes = "Gets the current User details")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "My user details"),
+            @ApiResponse(code = 403, message = "Forbidden - UserNotLoggedinException")
+    })
     public ResponseEntity<UserView> getMyUser(
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
             @RequestHeader(value = "login_password", required = false, defaultValue = "") String password
@@ -38,9 +44,16 @@ public class UserController {
     }
 
     @GetMapping("/specific/{userId}")
+    @ApiOperation(value = "GetUserById",
+            notes = "Gets the specific User details")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "That specific user details"),
+            @ApiResponse(code = 404, message = "Not Found")
+    })
     public ResponseEntity<UserView> getUserById(
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
             @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
+            @ApiParam(name = "userId", value = "the id of the specified user", required = true)
             @PathVariable Long userId
     ) {
         try {
@@ -61,6 +74,12 @@ public class UserController {
     }
 
     @GetMapping("/all")
+    @ApiOperation(value = "GetAllUsers",
+            notes = "Gets all User details")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "All users details"),
+            @ApiResponse(code = 404, message = "Not Found")
+    })
     public ResponseEntity<List<UserDto>> getAllUsers(
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
             @RequestHeader(value = "login_password", required = false, defaultValue = "") String password
@@ -75,16 +94,32 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userIn) {
+    @ApiOperation(value = "Create an User",
+            notes = "Creates a new User based on the information received in the request")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "The user that was just created"),
+            @ApiResponse(code = 406, message = "Not Acceptable - InvalidNewUserException")
+    })
+    public ResponseEntity<UserDto> createUser(
+            @ApiParam(name = "user", value = "user details", required = true)
+            @RequestBody UserDto userIn
+    ) {
         UserDto user = userService.saveUser(userIn);
         userService.addRoleToUser(user.getUsername(), USER);
         return ResponseEntity.created(null).body(user);
     }
 
+    @ApiOperation(value = "Updates the password af an User",
+            notes = "Updates the password af an User based on the information received in the request")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The user that was just updated"),
+            @ApiResponse(code = 403, message = "Forbidden - UserNotLoggedinException")
+    })
     @PutMapping("/updatePassword")
     public ResponseEntity<Optional<UserDto>> updateUserPassword (
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
             @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
+            @ApiParam(name = "newPassword", value = "the new wanted password", required = true)
             @RequestBody String newPassword
     ) {
         userService.handleLogin(username, password);
