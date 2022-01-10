@@ -14,6 +14,9 @@ import ro.unibuc.car_messenger.service.CarService;
 import ro.unibuc.car_messenger.service.OwnershipService;
 import ro.unibuc.car_messenger.service.UserService;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
@@ -35,6 +38,110 @@ class UserControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    void getMyUser_LoginFailErr() throws Exception {
+        //Arrange
+        when(userService.handleLogin(any(), any())).thenThrow(new UserNotLoggedinException());
+
+        //Act
+        mockMvc.perform(get("/user"))
+                .andExpect(status().isForbidden());
+
+        //Assert
+        verify(userService, times(1)).handleLogin(any(), any());
+        verify(ownershipService, never()).findAllByUserId(any());
+    }
+
+    @Test
+    void getMyUser_NoError() throws Exception {
+        //Arrange
+        when(userService.handleLogin(any(), any())).thenReturn(new UserDto());
+        when(ownershipService.findAllByUserId(any())).thenReturn(new ArrayList<>());
+
+        //Act
+        mockMvc.perform(get("/user"))
+                .andExpect(status().isOk());
+
+        //Assert
+        verify(userService, times(1)).handleLogin(any(), any());
+        verify(ownershipService, times(1)).findAllByUserId(any());
+    }
+
+    @Test
+    void getUserById_LoginFailErr() throws Exception {
+        //Arrange
+        when(userService.handleAdminLogin(any(), any())).thenThrow(new UserNotLoggedinException());
+
+        //Act
+        mockMvc.perform(get("/user/specific/1"))
+                .andExpect(status().isNotFound());
+
+        //Assert
+        verify(userService, times(1)).handleAdminLogin(any(), any());
+        verify(userService, never()).getUser(anyLong());
+        verify(ownershipService, never()).findAllByUserId(any());
+    }
+
+    @Test
+    void getUserById_SpecificUserNotFoundErr() throws Exception {
+        //Arrange
+        when(userService.getUser(anyLong())).thenReturn(Optional.empty());
+
+        //Act
+        mockMvc.perform(get("/user/specific/1"))
+                .andExpect(status().isNotFound());
+
+        //Assert
+        verify(userService, times(1)).handleAdminLogin(any(), any());
+        verify(userService, times(1)).getUser(anyLong());
+        verify(ownershipService, never()).findAllByUserId(any());
+    }
+
+    @Test
+    void getUserById_AdminNoError() throws Exception {
+        //Arrange
+        when(userService.getUser(anyLong())).thenReturn(Optional.of(new UserDto()));
+        when(ownershipService.findAllByUserId(any())).thenReturn(new ArrayList<>());
+
+        //Act
+        mockMvc.perform(get("/user/specific/1"))
+                .andExpect(status().isOk());
+
+        //Assert
+        verify(userService, times(1)).handleAdminLogin(any(), any());
+        verify(userService, times(1)).getUser(anyLong());
+        verify(ownershipService, times(1)).findAllByUserId(any());
+    }
+
+    @Test
+    void getAllUsers_LoginFailErr() throws Exception {
+        //Arrange
+        when(userService.handleAdminLogin(any(), any())).thenThrow(new UserNotLoggedinException());
+
+        //Act
+        mockMvc.perform(get("/user/all"))
+                .andExpect(status().isNotFound());
+
+        //Assert
+        verify(userService, times(1)).handleAdminLogin(any(), any());
+        verify(userService, never()).getUsers();
+    }
+
+    @Test
+    void getAllUsers_AdminNoError() throws Exception {
+        //Arrange
+        when(userService.getUser(anyLong())).thenReturn(Optional.of(new UserDto()));
+        when(userService.getUsers()).thenReturn(new ArrayList<>());
+
+        //Act
+        mockMvc.perform(get("/user/all"))
+                .andExpect(status().isOk());
+
+        //Assert
+        verify(userService, times(1)).handleAdminLogin(any(), any());
+        verify(userService, times(1)).getUsers();
+    }
 
     @Test
     void createUser_ExistingUserErr() throws Exception {
@@ -71,7 +178,7 @@ class UserControllerTest {
     }
 
     @Test
-    void updateUserPassword_UserNotFoundErr() throws Exception {
+    void updateUserPassword_LoginFailErr() throws Exception {
         //Arrange
         String newPassword = "new-password";
         when(userService.handleLogin(any(), any())).thenThrow(new UserNotLoggedinException());
