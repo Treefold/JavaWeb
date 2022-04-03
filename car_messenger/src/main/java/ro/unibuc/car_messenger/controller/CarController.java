@@ -47,7 +47,7 @@ public class CarController {
         } catch (Exception e) {
             Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
             if (ownershipDto.isEmpty()) { return ResponseEntity.notFound().build(); }
-            isAuthorized = ownershipDto.get().isOwner();
+            isAuthorized = ownershipDto.get().isAtLeastCoowner();
         }
         CarView carView = new CarView(carDto.get());
         carView.addUsers(ownershipService.findAllByCarId(carDto.get().getId()), isAuthorized);
