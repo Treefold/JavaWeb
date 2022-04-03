@@ -1,0 +1,4 @@
+To make a port available:
+
+netstat -ano | findstr "0.0.0.0:<insert_PORT_NUMBER_here>"
+taskkill /PID <insert_PID_ID_here> /F
