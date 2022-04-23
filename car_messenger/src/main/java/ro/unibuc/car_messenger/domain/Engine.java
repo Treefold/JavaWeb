@@ -18,10 +18,11 @@ public class Engine {
     @Column(name = "number", nullable = false, unique = true)
     private String number;
 
-    @OneToOne
-    private Car car;
-
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private EngineType type;
+
+    @OneToOne
+    private Car car;
+
 }
