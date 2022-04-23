@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.util.List;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Builder @Data @AllArgsConstructor @NoArgsConstructor @Entity
@@ -25,5 +27,7 @@ public class Car {
     @Column(name = "country_code", nullable = false)
     private String countryCode;
 
+    @OneToMany(mappedBy = "car")
+    private List<Ownership> ownerships;
 
 }
