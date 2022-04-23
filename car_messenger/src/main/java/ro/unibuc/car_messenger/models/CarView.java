@@ -2,10 +2,10 @@ package ro.unibuc.car_messenger.models;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import ro.unibuc.car_messenger.domain.Engine;
 import ro.unibuc.car_messenger.domain.EngineType;
 import ro.unibuc.car_messenger.domain.OwnershipType;
 import ro.unibuc.car_messenger.dto.CarDto;
+import ro.unibuc.car_messenger.dto.EngineDto;
 import ro.unibuc.car_messenger.dto.OwnershipDto;
 
 import java.util.ArrayList;
@@ -31,8 +31,6 @@ public class CarView {
     @ApiModelProperty(value = "pendingRequestUserIds", notes = "The requested users (by id) of the Car", position = 6)
     private List<Long> pendingRequestUserIds;
 
-
-
     public CarView(CarDto carDto) {
         this.id = carDto.getId();
         this.plate = carDto.getPlate();
@@ -43,11 +41,11 @@ public class CarView {
         this.pendingRequestUserIds = new ArrayList<>();
     }
 
-    public CarView(CarDto carDto, Engine engine) {
+    public CarView(CarDto carDto, EngineDto engineDto) {
         this(carDto);
-        if (engine != null) {
-            this.engineNumber = engine.getNumber();
-            this.engineType = engine.getType();
+        if (engineDto != null) {
+            this.engineNumber = engineDto.getNumber();
+            this.engineType = engineDto.getType();
         }
     }
 
