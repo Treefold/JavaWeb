@@ -2,6 +2,8 @@ package ro.unibuc.car_messenger.models;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import ro.unibuc.car_messenger.domain.Engine;
+import ro.unibuc.car_messenger.domain.EngineType;
 import ro.unibuc.car_messenger.domain.OwnershipType;
 import ro.unibuc.car_messenger.dto.CarDto;
 import ro.unibuc.car_messenger.dto.OwnershipDto;
@@ -17,6 +19,8 @@ public class CarView {
     private String plate;
     @ApiModelProperty(value = "countryCode", required = true, notes = "The country code of the Car", example = "RO", position = 2)
     private String countryCode;
+    private String engineNumber = null;
+    private EngineType engineType = null;
 
     @ApiModelProperty(value = "ownerUserId", required = true, notes = "The owner Id of the Car", position = 3)
     private Long ownerUserId;
@@ -37,6 +41,14 @@ public class CarView {
         this.coownerUserIds = new ArrayList<>();
         this.pendingInvitationUserIds = new ArrayList<>();
         this.pendingRequestUserIds = new ArrayList<>();
+    }
+
+    public CarView(CarDto carDto, Engine engine) {
+        this(carDto);
+        if (engine != null) {
+            this.engineNumber = engine.getNumber();
+            this.engineType = engine.getType();
+        }
     }
 
     public CarView addUser(Long userId, OwnershipType category, boolean isOwner) {

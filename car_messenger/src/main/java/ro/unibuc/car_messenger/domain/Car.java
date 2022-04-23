@@ -20,12 +20,14 @@ public class Car {
     @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-
     @Column(name = "plate", nullable = false)
     private String plate;
 
     @Column(name = "country_code", nullable = false)
     private String countryCode;
+
+    @Column(name = "engine_id")
+    private Long engineId;
 
     @OneToMany(mappedBy = "car")
     private List<Ownership> ownerships;
