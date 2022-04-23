@@ -10,6 +10,7 @@ import ro.unibuc.car_messenger.dto.OwnershipDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 public class CarView {
@@ -41,11 +42,14 @@ public class CarView {
         this.pendingRequestUserIds = new ArrayList<>();
     }
 
-    public CarView(CarDto carDto, EngineDto engineDto) {
+    public CarView(CarDto carDto, Optional<EngineDto> engineDtoOptional) {
         this(carDto);
-        if (engineDto != null) {
-            this.engineNumber = engineDto.getNumber();
-            this.engineType = engineDto.getType();
+        if (engineDtoOptional.isPresent()) {
+            this.engineNumber = engineDtoOptional.get().getNumber();
+            this.engineType = engineDtoOptional.get().getType();
+        } else {
+            this.engineNumber = null;
+            this.engineType = null;
         }
     }
 

@@ -5,13 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ro.unibuc.car_messenger.domain.Engine;
 import ro.unibuc.car_messenger.domain.OwnershipType;
 import ro.unibuc.car_messenger.dto.CarDto;
+import ro.unibuc.car_messenger.dto.EngineDto;
 import ro.unibuc.car_messenger.dto.OwnershipDto;
 import ro.unibuc.car_messenger.dto.UserDto;
 import ro.unibuc.car_messenger.exception.UniqueException;
 import ro.unibuc.car_messenger.models.CarView;
 import ro.unibuc.car_messenger.service.CarService;
+import ro.unibuc.car_messenger.service.EngineService;
 import ro.unibuc.car_messenger.service.OwnershipService;
 import ro.unibuc.car_messenger.service.UserService;
 
@@ -29,6 +32,8 @@ public class CarController {
     private CarService carService;
     @Autowired
     private OwnershipService ownershipService;
+    @Autowired
+    private EngineService engineService;
 
     @GetMapping("/{carId}")
     public ResponseEntity<CarView> getCar(
@@ -49,7 +54,15 @@ public class CarController {
             if (ownershipDto.isEmpty()) { return ResponseEntity.notFound().build(); }
             isAuthorized = ownershipDto.get().isAtLeastCoowner();
         }
-        CarView carView = new CarView(carDto.get());
+
+        Optional<EngineDto> engineDtoOptional;
+        if (carDto.get().getEngineId() != null) {
+            engineDtoOptional = engineService.getEngine(carDto.get().getEngineId());
+        } else {
+            engineDtoOptional = Optional.empty();
+        }
+
+        CarView carView = new CarView(carDto.get(), engineDtoOptional);
         carView.addUsers(ownershipService.findAllByCarId(carDto.get().getId()), isAuthorized);
 
         return ResponseEntity.ok().body(carView);
