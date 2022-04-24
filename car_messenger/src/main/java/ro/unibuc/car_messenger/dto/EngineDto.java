@@ -18,7 +18,6 @@ public class EngineDto {
     @Size(min = 1, max = 30)
     private String number;
 
-    @NotBlank
     private EngineType type;
 
 }
