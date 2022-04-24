@@ -33,6 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/h2-console/login.do*").permitAll()
+                .antMatchers("/").hasAnyRole("ADMIN", "User")
+                .antMatchers("/car*").hasAnyRole("ADMIN", "User")
                 .and()
                 .formLogin().loginPage("/loginForm")
                 .loginProcessingUrl("/authUser")

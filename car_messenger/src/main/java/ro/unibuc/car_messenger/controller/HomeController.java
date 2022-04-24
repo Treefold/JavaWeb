@@ -8,7 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class HomeController {
 
-    @GetMapping("/loginForm")
+    @GetMapping({"login","/loginForm"})
     public String loginForm() { return "login"; }
 
     @GetMapping("/login-error")
@@ -17,7 +17,8 @@ public class HomeController {
     @GetMapping("/access_denied")
     public String accessDenied() { return "access_denied"; }
 
-    @RequestMapping({"", "/", "/index","/home"})
+
+    @RequestMapping("/")
     public ModelAndView getHome() {
         ModelAndView model = new ModelAndView("home");
         model.addObject("title", "Home");
