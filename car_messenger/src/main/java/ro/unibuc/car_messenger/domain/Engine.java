@@ -15,7 +15,7 @@ public class Engine {
     @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Column(name = "number", nullable = false, unique = true)
+    @Column(name = "number", nullable = false)
     private String number;
 
     @Column(name = "type", nullable = false)

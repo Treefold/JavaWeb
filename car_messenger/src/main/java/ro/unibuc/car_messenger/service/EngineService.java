@@ -41,6 +41,15 @@ public class EngineService {
         return engineDto;
     }
 
+    public Optional<EngineDto> updateEngine (Long id, EngineDto engineDto) {
+        Optional<Engine> engine = engineRepo.findById(id);
+        if (engine.isEmpty()) { return Optional.empty(); }
+        engine.get().setNumber(engineDto.getNumber());
+        engine.get().setType(engineDto.getType());
+        log.info("Updating engine Id{{}} from the database", id);
+        return Optional.of(engineMapper.mapToDto(engine.get()));
+    }
+
     public void deleteEngine(Long id) {
         log.info("Deleting engine Id{{}} from the database", id);
         engineRepo.deleteById(id);

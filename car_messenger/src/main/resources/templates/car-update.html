@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" />
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Your Car</h1>
+
+    <form th:action="@{'/car/update/'+${carDto.id}}" th:method="post" enctype="multipart/form-data">
+
+        <input type="hidden" th:field="${carDto.id}"/>
+
+        <input type="text" th:field="${carDto.plate}" placeholder="Plate" class="form-control mb-4 col-4">
+
+        <input type="text" th:field="${carDto.countryCode}" placeholder="Country Code" class="form-control mb-4 col-4">
+
+        <input type="hidden" th:field="${engineDto.id}"/>
+
+        <input type="text" th:field="${engineDto.number}" placeholder="Engine Number" class="form-control mb-4 col-4">
+
+        <select th:field="${engineDto.type}" placeholder="Engine Type" class="form-control mb-4 col-4">
+            <option th:each="engineType:${engineTypes}" th:value="${engineType}" th:text="${engineType}"></option>
+        </select>
+
+        <button type="submit" class="btn btn-success col-2">Update Car</button>
+
+    </form>
+
+    </br>
+    <div class="col-md-3" style="display: flex;">
+        <a class="btn btn-info" th:href="@{'/car/view/'+${carDto.id}}" th:method="GET">Back</a>
+    </div>
+</div>
+
+</body>
+</html>
