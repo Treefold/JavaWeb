@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" />
     <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </head>
-
 <body>
+
 <p>Logged user: <span sec:authentication="name">user</span> Roles: <span sec:authentication="principal.authorities">[ROLE_USER]</span></p>
 
 <h2 style="display: inline-block">Owned Cars</h2>
@@ -96,6 +96,6 @@
 </div>
 
 <div class="col-md-3"> <form th:action="@{/logout}" method="POST"> <input type="submit" class="btn btn-primary" value="Logout"></form></div>
-</body>
 
+</body>
 </html>
