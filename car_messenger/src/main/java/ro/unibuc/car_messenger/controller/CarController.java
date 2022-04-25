@@ -3,8 +3,12 @@ package ro.unibuc.car_messenger.controller;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import ro.unibuc.car_messenger.domain.OwnershipType;
 import ro.unibuc.car_messenger.dto.CarDto;
 import ro.unibuc.car_messenger.dto.EngineDto;
@@ -67,6 +71,55 @@ public class CarController {
         return ResponseEntity.ok().body(carView);
     }
 
+    @GetMapping("/view/{carId}")
+    public ModelAndView getCarView(@PathVariable Long carId) {
+        ModelAndView model = new ModelAndView("car-view");
+
+        Authentication userAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (userAuth instanceof AnonymousAuthenticationToken) {
+            model.setViewName("redirect:/login");
+            return model;
+        }
+
+        UserDto userDto = userService.getUser(userAuth.getName()).get();
+
+        Optional<CarDto> carDto = carService.findCarById(carId);
+        if (carDto.isEmpty()) {
+            model.setViewName("redirect:/notfound");
+            return model;
+        }
+
+        boolean isAuthorized = false;
+        if (userAuth.getAuthorities().contains("ADMIN")) {
+            isAuthorized = true;
+        } else {
+            Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
+            if (ownershipDto.isEmpty()){
+                model.setViewName("redirect:/notfound");
+                return model;
+            }
+            isAuthorized = ownershipDto.get().isAtLeastCoowner();
+        }
+
+        Optional<EngineDto> engineDtoOptional;
+        if (carDto.get().getEngineId() != null) {
+            engineDtoOptional = engineService.getEngine(carDto.get().getEngineId());
+        } else {
+            engineDtoOptional = Optional.empty();
+        }
+
+        CarView carView = new CarView(carDto.get(), engineDtoOptional);
+        carView.addUsers(ownershipService.findAllByCarId(carDto.get().getId()), isAuthorized);
+
+        model.addObject("carView", carView);
+        model.addObject("ownerUsername", userService.getUser(carView.getOwnerUserId()).get().getUsername());
+        model.addObject("coownersUsernames", userService.getUsers(carView.getCoownerUserIds()).stream().map(u -> u.getUsername()).toList());;
+        model.addObject("pendingInvitations", userService.getUsers(carView.getPendingInvitationUserIds()).stream().map(u -> u.getUsername()).toList());;
+        model.addObject("pendingRequests", userService.getUsers(carView.getPendingRequestUserIds()).stream().map(u -> u.getUsername()).toList());
+
+        return model;
+    }
+
     @PostMapping("/create")
     public ResponseEntity<CarDto> saveCar(
             @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
@@ -101,25 +154,22 @@ public class CarController {
     }
 
     @DeleteMapping("/delete/{carId}")
-    public ResponseEntity<CarDto> deleteCar(
-            @RequestHeader(value = "login_username", required = false, defaultValue = "") String username,
-            @RequestHeader(value = "login_password", required = false, defaultValue = "") String password,
-            @PathVariable Long carId
-    ) {
-        UserDto userDto = userService.handleLogin(username, password);
+    public String deleteCar(@PathVariable Long carId) {
+        Authentication userAuth = SecurityContextHolder.getContext().getAuthentication();
+        UserDto userDto = userService.getUser(userAuth.getName()).get();
         Optional<CarDto> carDto = carService.findCarById(carId);
-        if (carDto.isEmpty()) { return ResponseEntity.notFound().build(); }
-        try {
-            userService.handleAdminLogin(username, password);
-        } catch (Exception e) {
+        if (carDto.isEmpty()) { return "notfound"; }
+
+        if (!userAuth.getAuthorities().contains("ADMIN")) {
             Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
             if (ownershipDto.isEmpty() || !ownershipDto.get().isAtLeastCoowner()) {
-                return ResponseEntity.notFound().build();
+                return "notfound";
             }
             if (ownershipDto.get().isOwner()) { carService.deleteCar(carId); }
             else { ownershipService.deleteOwnership(ownershipDto.get().getId()); }
         }
-        return ResponseEntity.ok().body(carDto.get());
+
+        return "home";
     }
 
     @PostMapping("/request/{carId}")
