@@ -181,6 +181,7 @@ public class CarController {
     @GetMapping("/delete/{carId}")
     public String deleteCar(@PathVariable Long carId) {
         Authentication userAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (userAuth instanceof AnonymousAuthenticationToken) { return "redirect:/login"; }
         UserDto userDto = userService.getUser(userAuth.getName()).get();
         Optional<CarDto> carDto = carService.findCarById(carId);
         if (carDto.isEmpty()) { return "redirect:/notfound"; }
