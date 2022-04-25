@@ -46,6 +46,9 @@ public class HomeController {
     @GetMapping("/access_denied")
     public String accessDenied() { return "access_denied"; }
 
+    @GetMapping("/notfound")
+    public String notfound() { return "notfound"; }
+
 
     @RequestMapping("/")
     public ModelAndView getHome() {
