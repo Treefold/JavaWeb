@@ -16,15 +16,20 @@
 
         <input type="hidden" th:field="${carDto.id}"/>
 
-        <input type="text" th:field="${carDto.plate}" placeholder="Plate" class="form-control mb-4 col-4">
+        <label>Plate</label>
+        <input th:field="${carDto.plate}" class="form-control mb-4 col-4" required>
+        <p th:errors="${carDto.plate}">Plate Error</p>
 
-        <input type="text" th:field="${carDto.countryCode}" placeholder="Country Code" class="form-control mb-4 col-4">
+        <label>Country Code</label>
+        <input th:field="${carDto.countryCode}" class="form-control mb-4 col-4" required>
+        <p th:errors="${carDto.countryCode}">Country Code Error</p>
 
-        <input type="hidden" th:field="${engineDto.id}"/>
+        <label>Engine Number</label>
+        <input th:field="${engineDto.number}" class="form-control mb-4 col-4" required>
+        <p th:errors="${engineDto.number}">Engine Number Error</p>
 
-        <input type="text" th:field="${engineDto.number}" placeholder="Engine Number" class="form-control mb-4 col-4">
-
-        <select th:field="${engineDto.type}" placeholder="Engine Type" class="form-control mb-4 col-4">
+        <label>Engine Type</label>
+        <select th:field="${engineDto.type}" class="form-control mb-4 col-4" required>
             <option th:each="engineType:${engineTypes}" th:value="${engineType}" th:text="${engineType}"></option>
         </select>
 

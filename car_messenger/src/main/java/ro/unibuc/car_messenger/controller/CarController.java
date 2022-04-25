@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -97,14 +98,19 @@ public class CarController {
     }
 
     @PostMapping("/create")
-    public String saveCar(@Valid CarDto carDto, @Valid EngineDto engineDto, BindingResult result, Model mode) {
+    public String saveCar(
+            @ModelAttribute @Valid CarDto carDto,
+            @ModelAttribute @Valid EngineDto engineDto,
+            BindingResult bindingResult,
+            Model model
+    ) {
         Authentication userAuth = SecurityContextHolder.getContext().getAuthentication();
         if (userAuth instanceof AnonymousAuthenticationToken) {
             return "redirect:/login";
         }
         UserDto userDto = userService.getUser(userAuth.getName()).get();
 
-        if (result.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "car-create";
         }
 
@@ -148,8 +154,7 @@ public class CarController {
             @PathVariable Long carId,
             @Valid CarDto carDtoForm,
             @Valid EngineDto engineDtoForm,
-            BindingResult result,
-            Model mode) {
+            BindingResult result) {
         Authentication userAuth = SecurityContextHolder.getContext().getAuthentication();
         if (userAuth instanceof AnonymousAuthenticationToken) { return "redirect:/login"; }
         UserDto userDto = userService.getUser(userAuth.getName()).get();
@@ -183,6 +188,7 @@ public class CarController {
         Authentication userAuth = SecurityContextHolder.getContext().getAuthentication();
         if (userAuth instanceof AnonymousAuthenticationToken) { return "redirect:/login"; }
         UserDto userDto = userService.getUser(userAuth.getName()).get();
+
         Optional<CarDto> carDto = carService.findCarById(carId);
         if (carDto.isEmpty()) { return "redirect:/notfound"; }
 
