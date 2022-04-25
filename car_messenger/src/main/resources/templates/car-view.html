@@ -76,11 +76,9 @@
 <div class="col-md-3" style="display: flex;">
     <a href="\" class="btn btn-info">Back</a>
     &nbsp&nbsp
-    <a href="@{'/car/update/' + ${carView.getId()}}" class="btn btn-warning">Edit</a>
+    <a class="btn btn-warning" href="@{'/car/update/' + ${carView.getId()}}">Edit</a>
     &nbsp&nbsp
-    <form action="#" th:action="@{'/car/delete/' + ${carView.getId()}}" th:method="delete" >
-        <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
+    <a class="btn btn-danger" th:href="@{'/car/delete/' + ${carView.getId()}}" th:method="DELETE">Delete</a>
 </div>
 
 </body>

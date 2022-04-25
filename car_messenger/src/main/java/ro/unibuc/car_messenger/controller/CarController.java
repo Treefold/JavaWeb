@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,7 +24,7 @@ import ro.unibuc.car_messenger.service.UserService;
 
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/car")
 @Validated
 @Api(value = "/car",
@@ -153,23 +154,24 @@ public class CarController {
         return ResponseEntity.ok().body(carService.updateCar(carId, carDtoIn).get());
     }
 
-    @DeleteMapping("/delete/{carId}")
+//    @DeleteMapping("/delete/{carId}")
+    @GetMapping("/delete/{carId}")
     public String deleteCar(@PathVariable Long carId) {
         Authentication userAuth = SecurityContextHolder.getContext().getAuthentication();
         UserDto userDto = userService.getUser(userAuth.getName()).get();
         Optional<CarDto> carDto = carService.findCarById(carId);
-        if (carDto.isEmpty()) { return "notfound"; }
+        if (carDto.isEmpty()) { return "redirect:/notfound"; }
 
         if (!userAuth.getAuthorities().contains("ADMIN")) {
             Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
             if (ownershipDto.isEmpty() || !ownershipDto.get().isAtLeastCoowner()) {
-                return "notfound";
+                return "redirect:/notfound";
             }
             if (ownershipDto.get().isOwner()) { carService.deleteCar(carId); }
             else { ownershipService.deleteOwnership(ownershipDto.get().getId()); }
         }
 
-        return "home";
+        return "redirect:/";
     }
 
     @PostMapping("/request/{carId}")
