@@ -33,15 +33,15 @@
         </tr>
         <tr>
             <th>
-                <span style="display: inline-block">Coowners </span>
-                <form th:action="@{'/car/invite/' + ${carId}}" method="GET"> <input type="submit" class="btn btn-success" value="Add"></form>
+                <p style="display: inline-block">Coowners </p>
+                <form th:if="${isAuthorized}" th:action="@{'/car/invite/' + ${carId}}" method="GET"> <input type="submit" class="btn btn-success" value="Add"></form>
             </th>
             <td th:if="${coownersUsernames.isEmpty()}">None</td>
             <td th:unless="${coownersUsernames.isEmpty()}">
                 <ul>
                     <li th:each="coowner:${coownersUsernames}">
-                        <p th:text="${coowner}"></p>
-                        <form th:action="@{'/car/remove/' + ${carView.getId()} + '/' + ${coowner}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Remove"></form>
+                        <p style="display: inline-block" th:text="${coowner}"></p>
+                        <form th:if="${isAuthorized}" th:action="@{'/car/remove/' + ${carView.getId()} + '/' + ${coowner}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Remove"></form>
                     </li>
                 </ul>
             </td>
@@ -64,7 +64,7 @@
             <td th:unless="${pendingRequests.isEmpty()}">
                 <ul>
                     <li th:each="request:${pendingRequests}">
-                        <p th:text="${request}"></p>
+                        <p style="display: inline-block" th:text="${request}"></p>
                         <form th:action="@{'/car/remove/' + ${carView.getId()} + '/' + ${request}}" method="PUT"> <input type="submit" class="btn btn-success" value="Accept"></form>
                         <form th:action="@{'/car/remove/' + ${carView.getId()} + '/' + ${request}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Decline"></form>
                     </li>
