@@ -9,11 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import ro.unibuc.car_messenger.domain.Engine;
 import ro.unibuc.car_messenger.domain.EngineType;
 import ro.unibuc.car_messenger.domain.OwnershipType;
 import ro.unibuc.car_messenger.dto.CarDto;
@@ -29,7 +26,6 @@ import ro.unibuc.car_messenger.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 @Controller

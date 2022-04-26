@@ -29,12 +29,11 @@ public class CarMessengerApplication {
             }
 
             UserDto adminUserDto = userService.saveUser(new UserDto(null, "mihaidaniel@gmail.com", "Password0."));
+            userService.saveUser(new UserDto(null, "Test1@gmail.com", "Test1."));
             userService.addRoleToUser("mihaidaniel@gmail.com", RoleType.ADMIN);
             EngineDto engineDto = engineService.saveEngine(new EngineDto(null, "XYZ132", EngineType.DIESEL));
             CarDto adminCarDto = carService.saveCar(new CarDto(null, "Admin", "007", engineDto.getId()));
             OwnershipDto adminOwnershipDto = ownershipService.saveOwnership(new OwnershipDto(null, adminUserDto, adminCarDto, OwnershipType.OWNER));
-
-            userService.saveUser(new UserDto(null, "Test1@gmail.com", "Test1."));
             //*/
         };
     }
