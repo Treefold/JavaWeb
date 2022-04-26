@@ -65,7 +65,7 @@
                 <ul>
                     <li th:each="request:${pendingRequests}">
                         <p style="display: inline-block" th:text="${request}"></p>
-                        <form th:action="@{'/car/remove/' + ${carView.getId()} + '/' + ${request}}" method="PUT"> <input type="submit" class="btn btn-success" value="Accept"></form>
+                        <form th:action="@{'/car/request/accept/' + ${carView.getId()} + '/' + ${request}}" method="PUT"> <input type="submit" class="btn btn-success" value="Accept"></form>
                         <form th:action="@{'/car/remove/' + ${carView.getId()} + '/' + ${request}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Decline"></form>
                     </li>
                 </ul>

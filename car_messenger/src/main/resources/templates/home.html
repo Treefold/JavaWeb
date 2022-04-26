@@ -69,7 +69,7 @@
             <td th:text="${car.getPlate()}"></td>
             <td th:text="${car.getCountryCode()}"></td>
             <td><form th:action="@{'/car/invite/accept/' + ${car.getId()}}" method="PUT"> <input type="submit" class="btn btn-success" value="Accept"></form></td>
-            <td><form th:action="@{'/car/remove/' + ${car.getId()}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Delete"></form></td>
+            <td><form th:action="@{'/car/remove/' + ${car.getId()}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Decline"></form></td>
         </tr>
     </table>
 </div>
@@ -90,7 +90,7 @@
         >
             <td th:text="${car.getPlate()}"></td>
             <td th:text="${car.getCountryCode()}"></td>
-            <td><form th:action="@{'/car/request/' + ${car.getId()}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Delete"></form></td>
+            <td><form th:action="@{'/car/remove/' + ${car.getId()}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Delete"></form></td>
         </tr>
     </table>
 </div>
