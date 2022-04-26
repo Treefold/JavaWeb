@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import ro.unibuc.car_messenger.domain.*;
 import ro.unibuc.car_messenger.dto.CarDto;
 import ro.unibuc.car_messenger.dto.EngineDto;
@@ -21,9 +22,9 @@ public class CarMessengerApplication {
     public static void main(String[] args) { SpringApplication.run(CarMessengerApplication.class, args); }
 
     @Bean
+    @Profile({"mysql", "mysqldocker"})
     CommandLineRunner run(UserService userService, CarService carService, OwnershipService ownershipService, EngineService engineService) {
         return args -> {
-            /*
             for (RoleType roleType : RoleType.values()) {
                 userService.saveRole(new Role(null, roleType));
             }
@@ -34,7 +35,6 @@ public class CarMessengerApplication {
             EngineDto engineDto = engineService.saveEngine(new EngineDto(null, "XYZ132", EngineType.DIESEL));
             CarDto adminCarDto = carService.saveCar(new CarDto(null, "Admin", "007", engineDto.getId()));
             OwnershipDto adminOwnershipDto = ownershipService.saveOwnership(new OwnershipDto(null, adminUserDto, adminCarDto, OwnershipType.OWNER));
-            //*/
         };
     }
 }
