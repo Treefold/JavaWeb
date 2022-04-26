@@ -50,15 +50,15 @@ public class CarController {
         UserDto userDto = userService.getUser(userAuth.getName()).get();
 
         Optional<CarDto> carDto = carService.findCarById(carId);
-        if (carDto.isEmpty()) {  return "redirect:/notfound";  }
+        if (carDto.isEmpty()) { return "redirect:/notfound";  }
 
         boolean isAuthorized = false;
         if (userAuth.getAuthorities().contains("ADMIN")) {
             isAuthorized = true;
         } else {
             Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
-            if (ownershipDto.isEmpty()) {  return "redirect:/notfound"; }
-            isAuthorized = ownershipDto.get().isAtLeastCoowner();
+            if (ownershipDto.isEmpty() || !ownershipDto.get().isAtLeastCoowner()) { return "redirect:/notfound"; }
+            isAuthorized = ownershipDto.get().isOwner();
         }
 
         Optional<EngineDto> engineDtoOptional;
@@ -71,11 +71,14 @@ public class CarController {
         CarView carView = new CarView(carDto.get(), engineDtoOptional);
         carView.addUsers(ownershipService.findAllByCarId(carDto.get().getId()), isAuthorized);
 
+        model.addAttribute("isAuthorized", isAuthorized);
         model.addAttribute("carView", carView);
         model.addAttribute("ownerUsername", userService.getUser(carView.getOwnerUserId()).get().getUsername());
-        model.addAttribute("coownersUsernames", userService.getUsers(carView.getCoownerUserIds()).stream().map(u -> u.getUsername()).toList());;
-        model.addAttribute("pendingInvitations", userService.getUsers(carView.getPendingInvitationUserIds()).stream().map(u -> u.getUsername()).toList());;
-        model.addAttribute("pendingRequests", userService.getUsers(carView.getPendingRequestUserIds()).stream().map(u -> u.getUsername()).toList());
+        model.addAttribute("coownersUsernames", userService.getUsers(carView.getCoownerUserIds()).stream().map(u -> u.getUsername()).toList());
+        if(isAuthorized) {
+            model.addAttribute("pendingInvitations", userService.getUsers(carView.getPendingInvitationUserIds()).stream().map(u -> u.getUsername()).toList());
+            model.addAttribute("pendingRequests", userService.getUsers(carView.getPendingRequestUserIds()).stream().map(u -> u.getUsername()).toList());
+        }
 
         return "car-view";
     }
