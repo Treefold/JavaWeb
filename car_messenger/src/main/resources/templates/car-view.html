@@ -47,7 +47,7 @@
             </td>
         </tr>
         <tr th:if="${isAuthorized}">
-            <th>Invitations</th>
+            <th>Invitations Sent</th>
             <td th:if="${pendingInvitations.isEmpty()}">None</td>
             <td th:unless="${pendingInvitations.isEmpty()}">
                 <ul>
@@ -59,7 +59,7 @@
             </td>
         </tr>
         <tr th:if="${isAuthorized}">
-            <th>Requests</th>
+            <th>Requests Received</th>
             <td th:if="${pendingRequests.isEmpty()}">None</td>
             <td th:unless="${pendingRequests.isEmpty()}">
                 <ul>

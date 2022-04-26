@@ -52,7 +52,7 @@
     </table>
 </div>
 
-<h2>Invitations</h2>
+<h2>Invitations Received</h2>
 <div class="container">
     <table class="table table-hover ">
         <thead class="thead-inverse">
@@ -69,12 +69,12 @@
             <td th:text="${car.getPlate()}"></td>
             <td th:text="${car.getCountryCode()}"></td>
             <td><form th:action="@{'/car/invite/' + ${car.getId()}}" method="PUT"> <input type="submit" class="btn btn-success" value="Accept"></form></td>
-            <td><form th:action="@{'/car/invite/' + ${car.getId()}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Delete"></form></td>
+            <td><form th:action="@{'/car/remove/' + ${car.getId()}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Delete"></form></td>
         </tr>
     </table>
 </div>
 
-<h2 style="display: inline-block">Requests</h2>
+<h2 style="display: inline-block">Requests Sent</h2>
 <span style="display: inline-block"><form th:action="@{'/car/request'}" method="GET"><input type="submit" class="btn btn-success" value="New Request"></form></span>
 <div class="container">
     <table class="table table-hover ">

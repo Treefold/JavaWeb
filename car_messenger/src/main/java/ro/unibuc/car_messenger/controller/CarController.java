@@ -259,15 +259,28 @@ public class CarController {
             @PathVariable String removedUserUsername
     ) {
         Authentication userAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (userAuth instanceof AnonymousAuthenticationToken) { return "redirect:/login"; }
+        if (userAuth instanceof AnonymousAuthenticationToken) {
+            return "redirect:/login";
+        }
         UserDto userDto = userService.getUser(userAuth.getName()).get();
 
         Optional<CarDto> carDto = carService.findCarById(carId);
-        if (carDto.isEmpty()) { return "redirect:/"; }
+        if (carDto.isEmpty()) {
+            return "redirect:/";
+        }
 
+        Optional<UserDto> removedUserDto = userService.getUser(removedUserUsername);
+        if (removedUserDto.isEmpty()) {
+            return "redirect:/";
+        }
+
+        String finalRedirect = "redirect:/car/view/" + carId;
         boolean isAuthorized = false;
         if (userAuth.getAuthorities().contains("ADMIN")) {
             isAuthorized = true;
+        } else if (userDto.getId() == removedUserDto.get().getId()){
+            isAuthorized = true;
+            finalRedirect = "redirect:/";
         } else {
             Optional<OwnershipDto> ownershipDto = ownershipService.findFirstByUserIdAndCarId(userDto.getId(), carId);
             if (ownershipDto.isPresent() && ownershipDto.get().isOwner()) {
@@ -275,17 +288,18 @@ public class CarController {
             }
         }
         if (!isAuthorized) { return "redirect:/"; }
-
-        Optional<UserDto> removedUserDto = userService.getUser(removedUserUsername);
-        if (removedUserDto.isEmpty()) { return "redirect:/"; }
         Optional<OwnershipDto> removedOwnershipDto = ownershipService.findFirstByUserIdAndCarId(removedUserDto.get().getId(), carId);
-        if (removedOwnershipDto.isEmpty()) { return "redirect:/"; }
-        if (!removedOwnershipDto.get().isOwner()) { ownershipService.deleteOwnership(removedOwnershipDto.get().getId()); }
+        if (removedOwnershipDto.isPresent() && !removedOwnershipDto.get().isOwner()) { ownershipService.deleteOwnership(removedOwnershipDto.get().getId()); }
 
-        return "redirect:/car/view/" + carId;
+        return finalRedirect;
     }
 
-
+    @GetMapping("/remove/{carId}")
+    public String removeOwnOwnership(@PathVariable Long carId) {
+        Authentication userAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (userAuth instanceof AnonymousAuthenticationToken) { return "redirect:/login"; }
+        return "redirect:" + carId + "/" + userAuth.getName();
+    }
 
     @PostMapping("/request/{carId}")
     public ResponseEntity<Void> requestCoownership(
