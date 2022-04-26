@@ -34,7 +34,7 @@
         <tr>
             <th>
                 <span style="display: inline-block">Coowners </span>
-                <form th:action="@{/car/inviteView}" method="GET"> <input type="submit" class="btn btn-success" value="Add"></form>
+                <form th:action="@{'/car/invite/' + ${carId}}" method="GET"> <input type="submit" class="btn btn-success" value="Add"></form>
             </th>
             <td th:if="${coownersUsernames.isEmpty()}">None</td>
             <td th:unless="${coownersUsernames.isEmpty()}">
@@ -52,8 +52,9 @@
             <td th:unless="${pendingInvitations.isEmpty()}">
                 <ul>
                     <li th:each="invitation:${pendingInvitations}">
-                        <p th:text="${invitation}"></p>
-                        <form th:action="@{'/car/remove/' + ${carView.getId()} + '/' + ${invitation}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Remove"></form>                    </li>
+                        <p style="display: inline-block" th:text="${invitation}"></p>
+                        <a class="btn btn-danger"  th:href="@{'/car/remove/' + ${carView.getId()} + '/' + ${invitation}}" th:method="DELETE">Remove</a>
+                    </li>
                 </ul>
             </td>
         </tr>
