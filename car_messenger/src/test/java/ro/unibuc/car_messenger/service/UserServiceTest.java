@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 import ro.unibuc.car_messenger.domain.Role;
 import ro.unibuc.car_messenger.domain.RoleType;
 import ro.unibuc.car_messenger.domain.User;
@@ -25,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("h2")
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 

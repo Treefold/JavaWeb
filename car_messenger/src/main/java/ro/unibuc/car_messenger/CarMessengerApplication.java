@@ -25,16 +25,18 @@ public class CarMessengerApplication {
     @Profile({"mysql", "mysqldocker"})
     CommandLineRunner run(UserService userService, CarService carService, OwnershipService ownershipService, EngineService engineService) {
         return args -> {
-            for (RoleType roleType : RoleType.values()) {
-                userService.saveRole(new Role(null, roleType));
-            }
+            try {
+                for (RoleType roleType : RoleType.values()) {
+                    userService.saveRole(new Role(null, roleType));
+                }
 
-            UserDto adminUserDto = userService.saveUser(new UserDto(null, "mihaidaniel@gmail.com", "Password0."));
-            userService.saveUser(new UserDto(null, "Test1@gmail.com", "Test1."));
-            userService.addRoleToUser("mihaidaniel@gmail.com", RoleType.ADMIN);
-            EngineDto engineDto = engineService.saveEngine(new EngineDto(null, "XYZ132", EngineType.DIESEL));
-            CarDto adminCarDto = carService.saveCar(new CarDto(null, "Admin", "007", engineDto.getId()));
-            OwnershipDto adminOwnershipDto = ownershipService.saveOwnership(new OwnershipDto(null, adminUserDto, adminCarDto, OwnershipType.OWNER));
+                UserDto adminUserDto = userService.saveUser(new UserDto(null, "mihaidaniel@gmail.com", "Password0."));
+                userService.saveUser(new UserDto(null, "Test1@gmail.com", "Test1."));
+                userService.addRoleToUser("mihaidaniel@gmail.com", RoleType.ADMIN);
+                EngineDto engineDto = engineService.saveEngine(new EngineDto(null, "XYZ132", EngineType.DIESEL));
+                CarDto adminCarDto = carService.saveCar(new CarDto(null, "Admin", "007", engineDto.getId()));
+                OwnershipDto adminOwnershipDto = ownershipService.saveOwnership(new OwnershipDto(null, adminUserDto, adminCarDto, OwnershipType.OWNER));
+            } catch (Exception e) {}
         };
     }
 }
