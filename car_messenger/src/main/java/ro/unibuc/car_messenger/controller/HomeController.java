@@ -57,7 +57,7 @@ public class HomeController {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Long userId = userService.getUser(username).get().getId();
 
-        List<OwnershipDto> ownerships = ownershipService.findAllByUserId(userId);
+        List<OwnershipDto> ownerships = ownershipService.findAllByUserIdSortedByCarId(userId);
         List<CarDto> ownedCars = ownerships.stream().filter(o -> o.isOwner())
                 .map(ownershipDto -> ownershipDto.getCarDto()).toList();
         List<CarDto> coownedCars = ownerships.stream().filter(o -> o.isCoowner())
