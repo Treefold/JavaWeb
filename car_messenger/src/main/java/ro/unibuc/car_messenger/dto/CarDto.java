@@ -24,4 +24,11 @@ public class CarDto {
     @ApiModelProperty(value = "countryCode", required = true, notes = "The country code of the Car", example = "RO", position = 2)
     private String countryCode;
 
+    private Long engineId;
+
+    public CarDto(Long id, String plate, String countryCode) {
+        this.id = id;
+        this.plate = plate;
+        this.countryCode = countryCode;
+    }
 }

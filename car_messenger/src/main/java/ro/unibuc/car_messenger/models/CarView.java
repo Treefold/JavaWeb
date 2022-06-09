@@ -2,14 +2,17 @@ package ro.unibuc.car_messenger.models;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+import ro.unibuc.car_messenger.domain.EngineType;
 import ro.unibuc.car_messenger.domain.OwnershipType;
 import ro.unibuc.car_messenger.dto.CarDto;
+import ro.unibuc.car_messenger.dto.EngineDto;
 import ro.unibuc.car_messenger.dto.OwnershipDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Getter
+@Getter @NoArgsConstructor
 public class CarView {
 
     private Long id;
@@ -17,6 +20,8 @@ public class CarView {
     private String plate;
     @ApiModelProperty(value = "countryCode", required = true, notes = "The country code of the Car", example = "RO", position = 2)
     private String countryCode;
+    private String engineNumber = null;
+    private EngineType engineType = null;
 
     @ApiModelProperty(value = "ownerUserId", required = true, notes = "The owner Id of the Car", position = 3)
     private Long ownerUserId;
@@ -27,8 +32,6 @@ public class CarView {
     @ApiModelProperty(value = "pendingRequestUserIds", notes = "The requested users (by id) of the Car", position = 6)
     private List<Long> pendingRequestUserIds;
 
-
-
     public CarView(CarDto carDto) {
         this.id = carDto.getId();
         this.plate = carDto.getPlate();
@@ -37,6 +40,17 @@ public class CarView {
         this.coownerUserIds = new ArrayList<>();
         this.pendingInvitationUserIds = new ArrayList<>();
         this.pendingRequestUserIds = new ArrayList<>();
+    }
+
+    public CarView(CarDto carDto, Optional<EngineDto> engineDtoOptional) {
+        this(carDto);
+        if (engineDtoOptional.isPresent()) {
+            this.engineNumber = engineDtoOptional.get().getNumber();
+            this.engineType = engineDtoOptional.get().getType();
+        } else {
+            this.engineNumber = null;
+            this.engineType = null;
+        }
     }
 
     public CarView addUser(Long userId, OwnershipType category, boolean isOwner) {

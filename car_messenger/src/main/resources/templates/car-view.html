@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CarView</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" />
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <table class="table table-hover ">
+        <tr>
+            <th>Plate</th>
+            <td th:text="${carView.getPlate()} ?: 'None'"></td>
+        </tr>
+        <tr>
+            <th>Country Code</th>
+            <td th:text="${carView.getCountryCode()} ?: 'None'"></td>
+        </tr>
+        <tr>
+            <th>Engine Number</th>
+            <td th:text="${carView.getEngineNumber()} ?: 'Unknown'"></td>
+        </tr>
+        <tr>
+            <th>Engine Type</th>
+            <td th:text="${carView.getEngineType()} ?: 'Unknown'"></td>
+        </tr>
+        <tr>
+            <th>Owner</th>
+            <td th:text="${ownerUsername} ?: 'Unknown'"></td>
+        </tr>
+        <tr>
+            <th>
+                <p style="display: inline-block">Coowners </p>
+                <form th:if="${isAuthorized}" th:action="@{'/car/invite/' + ${carId}}" method="GET"> <input type="submit" class="btn btn-success" value="Add"></form>
+            </th>
+            <td th:if="${coownersUsernames.isEmpty()}">None</td>
+            <td th:unless="${coownersUsernames.isEmpty()}">
+                <ul>
+                    <li th:each="coowner:${coownersUsernames}">
+                        <p style="display: inline-block" th:text="${coowner}"></p>
+                        <form th:if="${isAuthorized}" th:action="@{'/car/remove/' + ${carView.getId()} + '/' + ${coowner}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Remove"></form>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        <tr th:if="${isAuthorized}">
+            <th>Invitations Sent</th>
+            <td th:if="${pendingInvitations.isEmpty()}">None</td>
+            <td th:unless="${pendingInvitations.isEmpty()}">
+                <ul>
+                    <li th:each="invitation:${pendingInvitations}">
+                        <p style="display: inline-block" th:text="${invitation}"></p>
+                        <a class="btn btn-danger"  th:href="@{'/car/remove/' + ${carView.getId()} + '/' + ${invitation}}" th:method="DELETE">Remove</a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        <tr th:if="${isAuthorized}">
+            <th>Requests Received</th>
+            <td th:if="${pendingRequests.isEmpty()}">None</td>
+            <td th:unless="${pendingRequests.isEmpty()}">
+                <ul>
+                    <li th:each="request:${pendingRequests}">
+                        <p style="display: inline-block" th:text="${request}"></p>
+                        <form th:action="@{'/car/request/accept/' + ${carView.getId()} + '/' + ${request}}" method="PUT"> <input type="submit" class="btn btn-success" value="Accept"></form>
+                        <form th:action="@{'/car/remove/' + ${carView.getId()} + '/' + ${request}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Decline"></form>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="col-md-3" style="display: flex;">
+    <a href="/" class="btn btn-info">Back</a>
+    &nbsp&nbsp
+    <a th:if="${isAuthorized}" class="btn btn-warning" th:href="@{'/car/update/' + ${carView.getId()}}" th:method="GET">Edit</a>
+    &nbsp&nbsp
+    <a class="btn btn-danger"  th:href="@{'/car/delete/' + ${carView.getId()}}" th:method="DELETE" th:text="${isAuthorized} ? 'Delete' : 'Remove'"></a>
+</div>
+
+</body>
+</html>

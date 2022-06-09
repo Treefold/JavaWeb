@@ -74,6 +74,12 @@ public class UserService {
         return user.map(u -> userMapper.mapToDto(u));
     }
 
+    public List<UserDto> getUsers (List<Long> ids) {
+        log.info("Fetching users ids{{}}", ids);
+        List<User> users = userRepo.findAllById(ids);
+        return users.stream().map(u -> userMapper.mapToDto(u)).toList();
+    }
+
     public Optional<UserDto> getUser(String username) {
         log.info("Fetching user name{{}}", username);
         Optional<User> user = userRepo.findByUsername(username);

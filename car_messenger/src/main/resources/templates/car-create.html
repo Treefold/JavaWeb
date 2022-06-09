@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Car Create</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" />
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>New Car</h1>
+
+    <form th:action="@{/car/create/}" th:method="post" enctype="multipart/form-data">
+
+        <input type="hidden" th:field="${carDto.id}"/>
+
+        <label>Plate</label>
+        <input th:field="${carDto.plate}" class="form-control mb-4 col-4" required>
+        <p th:errors="${carDto.plate}">Plate Error</p>
+
+        <label>Country Code</label>
+        <input th:field="${carDto.countryCode}" class="form-control mb-4 col-4" required>
+        <p th:errors="${carDto.countryCode}">Country Code Error</p>
+
+        <label>Engine Number</label>
+        <input th:field="${engineDto.number}" class="form-control mb-4 col-4" required>
+        <p th:errors="${engineDto.number}">Engine Number Error</p>
+
+        <label>Engine Type</label>
+        <select th:field="${engineDto.type}" class="form-control mb-4 col-4" required>
+            <option th:each="engineType:${engineTypes}" th:value="${engineType}" th:text="${engineType}"></option>
+        </select>
+
+        <button type="submit" class="btn btn-success col-2">Add Car</button>
+
+    </form>
+
+    </br>
+    <div class="col-md-3" style="display: flex;">
+        <a href="/" class="btn btn-info">Back</a>
+    </div>
+</div>
+
+</body>
+</html>

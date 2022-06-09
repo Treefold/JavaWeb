@@ -6,6 +6,6 @@ import ro.unibuc.car_messenger.dto.CarDto;
 
 @Mapper(componentModel = "spring")
 public interface CarMapper {
-    CarDto mapToDto(Car user);
-    Car mapToEntity(CarDto user);
+    CarDto mapToDto(Car car);
+    Car mapToEntity(CarDto carDto);
 }

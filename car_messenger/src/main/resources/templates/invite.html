@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Invite</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" />
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Invite to Car</h1>
+
+    <form th:action="@{'/car/invite/' + ${carId}}" th:method="post" enctype="multipart/form-data">
+
+        <label>Username</label>
+        <input th:field="${inviteCoowner.username}" class="form-control mb-4 col-4" required>
+        <p th:errors="${inviteCoowner.username}">Username Error</p>
+
+        <button type="submit" class="btn btn-success col-2">Invite Coowner</button>
+
+    </form>
+
+    </br>
+    <div class="col-md-3" style="display: flex;">
+        <a th:href="@{'/car/view/' + ${carId}}" class="btn btn-info">Back</a>
+    </div>
+</div>
+
+</body>
+</html>

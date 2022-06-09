@@ -2,6 +2,7 @@ package ro.unibuc.car_messenger.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.unibuc.car_messenger.domain.Ownership;
@@ -31,6 +32,7 @@ public class OwnershipService {
     }
 
     public List<OwnershipDto> findAllByUserId (Long userId) { return ownershipMapper.mapToDto(ownershipRepo.findAllByUserId(userId)); }
+    public List<OwnershipDto> findAllByUserIdSortedByCarId (Long userId) { return ownershipMapper.mapToDto(ownershipRepo.findAllByUserId(userId, Sort.by("carId"))); }
     public List<OwnershipDto> findAllByCarId  (Long carId)  { return ownershipMapper.mapToDto(ownershipRepo.findAllByCarId (carId)); }
     public Optional<OwnershipDto> findFirstByUserIdAndCarId (Long userId, Long carId) { return ownershipMapper.mapToDto(ownershipRepo.findFirstByUserIdAndCarId(userId, carId)); }
 

@@ -5,7 +5,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
 public class UniqueException extends RuntimeException {
-    public UniqueException(String msg) {
-        super(msg);
+
+    public UniqueException() {}
+    public UniqueException(String message) {
+        super(message);
     }
+    public UniqueException(String message, Throwable throwable) {super(message, throwable);}
+
 }

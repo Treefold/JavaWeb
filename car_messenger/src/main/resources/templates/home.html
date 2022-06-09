@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.min.css" />
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<p>Logged user: <span sec:authentication="name">user</span> Roles: <span sec:authentication="principal.authorities">[ROLE_USER]</span></p>
+
+<h2 style="display: inline-block">Owned Cars</h2>
+<span style="display: inline-block"><form th:action="@{'/car/create'}" method="GET"><input type="submit" class="btn btn-success" value="Add Owned Car"></form></span>
+<div class="container">
+    <table class="table table-hover ">
+        <thead class="thead-inverse">
+        <tr>
+            <th>Plate</th>
+            <th>Country Code</th>
+            <th>Details</th>
+        </tr>
+        </thead>
+        <tr th:each="car, stat : ${ownedCars}"
+            th:class="${stat.odd}? 'table-light':'table-dark'"
+        >
+            <td th:text="${car.getPlate()}"></td>
+            <td th:text="${car.getCountryCode()}"></td>
+            <td><form th:action="@{'/car/view/' + ${car.getId()}}" method="GET"><input type="submit" class="btn btn-success" value="Details"></form></td>
+        </tr>
+    </table>
+</div>
+
+<h2>Coowned Cars </h2>
+<div class="container">
+    <table class="table table-hover ">
+        <thead class="thead-inverse">
+        <tr>
+            <th>Plate</th>
+            <th>Country Code</th>
+            <th>Details</th>
+        </tr>
+        </thead>
+        <tr th:each="car, stat : ${coownedCars}"
+            th:class="${stat.odd}? 'table-light':'table-dark'"
+        >
+            <td th:text="${car.getPlate()}"></td>
+            <td th:text="${car.getCountryCode()}"></td>
+            <td><form th:action="@{'/car/view/' + ${car.getId()}}" method="GET"><input type="submit" class="btn btn-success" value="Details"></form></td>
+        </tr>
+    </table>
+</div>
+
+<h2>Invitations Received</h2>
+<div class="container">
+    <table class="table table-hover ">
+        <thead class="thead-inverse">
+        <tr>
+            <th>Plate</th>
+            <th>Country Code</th>
+            <th>Accept</th>
+            <th>Decline</th>
+        </tr>
+        </thead>
+        <tr th:each="car, stat : ${invitations}"
+            th:class="${stat.odd}? 'table-light':'table-dark'"
+        >
+            <td th:text="${car.getPlate()}"></td>
+            <td th:text="${car.getCountryCode()}"></td>
+            <td><form th:action="@{'/car/invite/accept/' + ${car.getId()}}" method="PUT"> <input type="submit" class="btn btn-success" value="Accept"></form></td>
+            <td><form th:action="@{'/car/remove/' + ${car.getId()}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Decline"></form></td>
+        </tr>
+    </table>
+</div>
+
+<h2 style="display: inline-block">Requests Sent</h2>
+<span style="display: inline-block"><form th:action="@{'/car/request'}" method="GET"><input type="submit" class="btn btn-success" value="New Request"></form></span>
+<div class="container">
+    <table class="table table-hover ">
+        <thead class="thead-inverse">
+        <tr>
+            <th>Plate</th>
+            <th>Country Code</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tr th:each="car, stat : ${requests}"
+            th:class="${stat.odd}? 'table-light':'table-dark'"
+        >
+            <td th:text="${car.getPlate()}"></td>
+            <td th:text="${car.getCountryCode()}"></td>
+            <td><form th:action="@{'/car/remove/' + ${car.getId()}}" method="DELETE"> <input type="submit" class="btn btn-danger" value="Delete"></form></td>
+        </tr>
+    </table>
+</div>
+
+<div class="col-md-3"> <form th:action="@{/logout}" method="POST"> <input type="submit" class="btn btn-primary" value="Logout"></form></div>
+
+</body>
+</html>
